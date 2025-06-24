@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MessageSquare, BookOpen, News } from 'lucide-react';
+import { MessageSquare, BookOpen, Newspaper } from 'lucide-react';
 
 interface HeroProps {
   onNavigate: (section: string) => void;
@@ -25,7 +24,7 @@ const Hero = ({ onNavigate }: HeroProps) => {
       color: "from-green-500 to-green-600"
     },
     {
-      icon: News,
+      icon: Newspaper,
       title: "Latest Immigration News",
       description: "Stay updated with the latest immigration policies, changes, and important announcements.",
       action: () => onNavigate('news'),

@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Home, MessageSquare, BookOpen, News } from 'lucide-react';
+import { Home, MessageSquare, BookOpen, Newspaper } from 'lucide-react';
 
 interface NavigationProps {
   activeSection: string;
@@ -13,7 +12,7 @@ const Navigation = ({ activeSection, onNavigate }: NavigationProps) => {
     { id: 'home', label: 'Home', icon: Home },
     { id: 'feed', label: 'Share Experiences', icon: MessageSquare },
     { id: 'ai-assistant', label: 'AI Assistant', icon: BookOpen },
-    { id: 'news', label: 'Immigration News', icon: News },
+    { id: 'news', label: 'Immigration News', icon: Newspaper },
   ];
 
   return (
