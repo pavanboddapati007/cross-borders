@@ -129,7 +129,7 @@ const Hero = ({
                 </div>
                 <h3 className="text-2xl font-bold text-white">{feature.title}</h3>
                 <p className="text-gray-300 leading-relaxed">{feature.description}</p>
-                <Button onClick={feature.action} variant="ghost" className="w-full mt-6 bg-white/5 hover:bg-gradient-to-r hover:from-cyan-500/20 hover:to-purple-500/20 border border-gray-700 hover:border-cyan-500/50 rounded-xl transition-all duration-300 backdrop-blur-sm text-white">
+                <Button onClick={feature.action} variant="ghost" className="w-full mt-6 bg-white/5 hover:bg-gradient-to-r hover:from-cyan-500/20 hover:to-purple-500/20 border border-gray-700 hover:border-cyan-500/50 rounded-xl transition-all duration-300 backdrop-blur-sm text-base text-gray-950">
                   Explore Now
                 </Button>
               </CardContent>
