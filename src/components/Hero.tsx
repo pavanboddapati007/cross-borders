@@ -1,15 +1,12 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageSquare, Bot, Newspaper, Sparkles, Globe, Users, Filter, Plus } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
-
 interface HeroProps {
   onNavigate: (section: string) => void;
 }
-
 interface Story {
   id: string;
   title: string;
@@ -21,72 +18,62 @@ interface Story {
   stage: string;
   status: 'Completed' | 'In Progress' | 'Planning';
 }
-
-const Hero = ({ onNavigate }: HeroProps) => {
+const Hero = ({
+  onNavigate
+}: HeroProps) => {
   const [countryFilter, setCountryFilter] = useState('All Countries');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [stageFilter, setStageFilter] = useState('All Stages');
-
-  const stories: Story[] = [
-    {
-      id: '1',
-      title: 'Australian PR journey - skilled migration pathway',
-      author: 'Priya Sharma',
-      country: 'Australia',
-      date: 'Jun 24, 2025',
-      content: 'After 3 years on a temporary visa, finally got my permanent residency! The points system is competitive but fair. I went through the General Skilled Migration route as a software engineer. Key factors: 1) IELTS score of 8+ in all bands gave me maximum points, 2) Skills assessment through ACS was straightforward for IT, 3) State nomination from South Australia added crucial points, 4) Age factor matters - apply before 33 if possible. The medical and character checks were thorough but routine. Total process took 14 months from EOI to grant. Australia\'s quality of life makes it all worth it!',
-      category: 'Permanent Residence',
-      stage: 'Skilled Migration',
-      status: 'Completed'
-    },
-    {
-      id: '2',
-      title: 'Canadian Express Entry - Software Developer Path',
-      author: 'Ahmed Hassan',
-      country: 'Canada',
-      date: 'Jun 20, 2025',
-      content: 'Just received my ITA! Scored 472 points in the Express Entry pool. My advice: get your language tests done early (IELTS/CELPIP), and don\'t underestimate the importance of French - it can boost your score significantly.',
-      category: 'Express Entry',
-      stage: 'Professional',
-      status: 'In Progress'
-    },
-    {
-      id: '3',
-      title: 'UK Student to Work Visa Transition',
-      author: 'Maria Rodriguez',
-      country: 'United Kingdom',
-      date: 'Jun 18, 2025',
-      content: 'Successfully transitioned from Tier 4 student visa to Skilled Worker visa. The new points-based system is actually quite straightforward if you have a job offer from an approved sponsor.',
-      category: 'Work Visa',
-      stage: 'Student Transition',
-      status: 'Completed'
-    }
-  ];
-
-  const features = [
-    {
-      icon: Users,
-      title: "Global Community",
-      description: "Connect with immigrants worldwide. Share experiences, challenges, and celebrate successes together.",
-      action: () => onNavigate('feed'),
-      gradient: "from-cyan-500 to-blue-600"
-    },
-    {
-      icon: Bot,
-      title: "AI Immigration Assistant",
-      description: "Get instant, accurate guidance powered by advanced AI for all your immigration questions.",
-      action: () => onNavigate('ai-assistant'),
-      gradient: "from-purple-500 to-pink-600"
-    },
-    {
-      icon: Globe,
-      title: "Immigration Insights",
-      description: "Stay ahead with real-time immigration news, policy updates, and expert analysis.",
-      action: () => onNavigate('news'),
-      gradient: "from-blue-500 to-cyan-500"
-    }
-  ];
-
+  const stories: Story[] = [{
+    id: '1',
+    title: 'Australian PR journey - skilled migration pathway',
+    author: 'Priya Sharma',
+    country: 'Australia',
+    date: 'Jun 24, 2025',
+    content: 'After 3 years on a temporary visa, finally got my permanent residency! The points system is competitive but fair. I went through the General Skilled Migration route as a software engineer. Key factors: 1) IELTS score of 8+ in all bands gave me maximum points, 2) Skills assessment through ACS was straightforward for IT, 3) State nomination from South Australia added crucial points, 4) Age factor matters - apply before 33 if possible. The medical and character checks were thorough but routine. Total process took 14 months from EOI to grant. Australia\'s quality of life makes it all worth it!',
+    category: 'Permanent Residence',
+    stage: 'Skilled Migration',
+    status: 'Completed'
+  }, {
+    id: '2',
+    title: 'Canadian Express Entry - Software Developer Path',
+    author: 'Ahmed Hassan',
+    country: 'Canada',
+    date: 'Jun 20, 2025',
+    content: 'Just received my ITA! Scored 472 points in the Express Entry pool. My advice: get your language tests done early (IELTS/CELPIP), and don\'t underestimate the importance of French - it can boost your score significantly.',
+    category: 'Express Entry',
+    stage: 'Professional',
+    status: 'In Progress'
+  }, {
+    id: '3',
+    title: 'UK Student to Work Visa Transition',
+    author: 'Maria Rodriguez',
+    country: 'United Kingdom',
+    date: 'Jun 18, 2025',
+    content: 'Successfully transitioned from Tier 4 student visa to Skilled Worker visa. The new points-based system is actually quite straightforward if you have a job offer from an approved sponsor.',
+    category: 'Work Visa',
+    stage: 'Student Transition',
+    status: 'Completed'
+  }];
+  const features = [{
+    icon: Users,
+    title: "Global Community",
+    description: "Connect with immigrants worldwide. Share experiences, challenges, and celebrate successes together.",
+    action: () => onNavigate('feed'),
+    gradient: "from-cyan-500 to-blue-600"
+  }, {
+    icon: Bot,
+    title: "AI Immigration Assistant",
+    description: "Get instant, accurate guidance powered by advanced AI for all your immigration questions.",
+    action: () => onNavigate('ai-assistant'),
+    gradient: "from-purple-500 to-pink-600"
+  }, {
+    icon: Globe,
+    title: "Immigration Insights",
+    description: "Stay ahead with real-time immigration news, policy updates, and expert analysis.",
+    action: () => onNavigate('news'),
+    gradient: "from-blue-500 to-cyan-500"
+  }];
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Completed':
@@ -99,9 +86,7 @@ const Hero = ({ onNavigate }: HeroProps) => {
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
-
-  return (
-    <div className="space-y-12 py-8">
+  return <div className="space-y-12 py-8">
       {/* Hero Section */}
       <div className="text-center space-y-8 py-16 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-blue-500/10 rounded-3xl blur-3xl"></div>
@@ -127,9 +112,7 @@ const Hero = ({ onNavigate }: HeroProps) => {
             <Button onClick={() => onNavigate('feed')} size="lg" className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg shadow-cyan-500/25 transition-all duration-300 hover:shadow-cyan-500/40 hover:scale-105">
               Join Community
             </Button>
-            <Button onClick={() => onNavigate('ai-assistant')} variant="outline" size="lg" className="border-2 border-purple-500 text-purple-400 hover:bg-purple-500/10 px-8 py-4 rounded-xl font-semibold backdrop-blur-sm transition-all duration-300 hover:border-purple-400">
-              Try AI Assistant
-            </Button>
+            <Button onClick={() => onNavigate('ai-assistant')} variant="outline" size="lg" className="border-2 border-purple-500 text-purple-400 hover:bg-purple-500/10 px-8 py-4 rounded-xl font-semibold backdrop-blur-sm transition-all duration-300 hover:border-purple-400">AI Assistant (Soon)</Button>
           </div>
         </div>
       </div>
@@ -137,9 +120,8 @@ const Hero = ({ onNavigate }: HeroProps) => {
       {/* Features Grid */}
       <div className="grid md:grid-cols-3 gap-8 mb-16">
         {features.map((feature, index) => {
-          const Icon = feature.icon;
-          return (
-            <Card key={index} className="group cursor-pointer transition-all duration-500 hover:scale-105 border-0 bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-xl hover:from-gray-800/60 hover:to-gray-700/40 rounded-2xl overflow-hidden">
+        const Icon = feature.icon;
+        return <Card key={index} className="group cursor-pointer transition-all duration-500 hover:scale-105 border-0 bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-xl hover:from-gray-800/60 hover:to-gray-700/40 rounded-2xl overflow-hidden">
               <CardContent className="p-8 text-center space-y-6 relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className={`w-16 h-16 mx-auto rounded-2xl bg-gradient-to-r ${feature.gradient} flex items-center justify-center group-hover:scale-110 transition-all duration-500 shadow-lg`}>
@@ -151,9 +133,8 @@ const Hero = ({ onNavigate }: HeroProps) => {
                   Explore Now
                 </Button>
               </CardContent>
-            </Card>
-          );
-        })}
+            </Card>;
+      })}
       </div>
 
       {/* Community Stories Section */}
@@ -216,8 +197,7 @@ const Hero = ({ onNavigate }: HeroProps) => {
 
         {/* Stories */}
         <div className="space-y-6">
-          {stories.map((story) => (
-            <Card key={story.id} className="bg-gray-800/30 backdrop-blur-xl border-gray-700/50 rounded-2xl p-8 hover:bg-gray-800/50 transition-all duration-300">
+          {stories.map(story => <Card key={story.id} className="bg-gray-800/30 backdrop-blur-xl border-gray-700/50 rounded-2xl p-8 hover:bg-gray-800/50 transition-all duration-300">
               <div className="space-y-4">
                 <div className="flex items-start justify-between">
                   <h3 className="text-2xl font-bold text-white">{story.title}</h3>
@@ -249,12 +229,9 @@ const Hero = ({ onNavigate }: HeroProps) => {
                   {story.content}
                 </p>
               </div>
-            </Card>
-          ))}
+            </Card>)}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Hero;
