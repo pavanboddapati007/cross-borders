@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MessageSquarePlus, Heart, MessageSquare, Share, Users, Globe, Filter, Plus } from 'lucide-react';
+import { MessageSquarePlus, Heart, MessageSquare, Share, Users, Globe, Filter, Plus, X } from 'lucide-react';
 
 interface Post {
   id: string;
@@ -26,6 +25,7 @@ const PostFeed = () => {
   const [countryFilter, setCountryFilter] = useState('All Countries');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [stageFilter, setStageFilter] = useState('All Stages');
+  const [showCreatePost, setShowCreatePost] = useState(false);
 
   const [posts, setPosts] = useState<Post[]>([
     {
@@ -108,6 +108,7 @@ const PostFeed = () => {
       
       setPosts([post, ...posts]);
       setNewPost({ title: '', content: '', country: '', category: '', stage: '' });
+      setShowCreatePost(false);
     }
   };
 
@@ -116,63 +117,77 @@ const PostFeed = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-4xl font-bold text-white">Community Feed</h2>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl flex items-center gap-2">
-          <Plus className="w-5 h-5" />
-          Share Your Story
+        <Button 
+          onClick={() => setShowCreatePost(!showCreatePost)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl flex items-center gap-2"
+        >
+          {showCreatePost ? (
+            <>
+              <X className="w-5 h-5" />
+              Cancel
+            </>
+          ) : (
+            <>
+              <Plus className="w-5 h-5" />
+              Share Your Story
+            </>
+          )}
         </Button>
       </div>
 
-      {/* Create Post Card */}
-      <Card className="bg-gray-800/50 backdrop-blur-xl border-gray-700 rounded-2xl p-8">
-        <div className="space-y-6">
-          <div className="flex items-center space-x-2 mb-4">
-            <MessageSquarePlus className="w-6 h-6 text-cyan-400" />
-            <h3 className="text-2xl font-bold text-white">Share Your Experience</h3>
+      {/* Create Post Card - Only show when showCreatePost is true */}
+      {showCreatePost && (
+        <Card className="bg-gray-800/50 backdrop-blur-xl border-gray-700 rounded-2xl p-8">
+          <div className="space-y-6">
+            <div className="flex items-center space-x-2 mb-4">
+              <MessageSquarePlus className="w-6 h-6 text-cyan-400" />
+              <h3 className="text-2xl font-bold text-white">Share Your Experience</h3>
+            </div>
+            
+            <Input
+              placeholder="Title of your post..."
+              value={newPost.title}
+              onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+              className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl"
+            />
+            
+            <Textarea
+              placeholder="Share your immigration experience, tips, or ask for advice..."
+              value={newPost.content}
+              onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+              className="min-h-[100px] bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl"
+            />
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Input
+                placeholder="Country"
+                value={newPost.country}
+                onChange={(e) => setNewPost({ ...newPost, country: e.target.value })}
+                className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl"
+              />
+              <Input
+                placeholder="Category (e.g., Green Card)"
+                value={newPost.category}
+                onChange={(e) => setNewPost({ ...newPost, category: e.target.value })}
+                className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl"
+              />
+              <Input
+                placeholder="Stage (e.g., Professional)"
+                value={newPost.stage}
+                onChange={(e) => setNewPost({ ...newPost, stage: e.target.value })}
+                className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl"
+              />
+            </div>
+            
+            <Button 
+              onClick={handleSubmitPost}
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-3 rounded-xl font-semibold"
+            >
+              Share Experience
+            </Button>
           </div>
-          
-          <Input
-            placeholder="Title of your post..."
-            value={newPost.title}
-            onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-            className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl"
-          />
-          
-          <Textarea
-            placeholder="Share your immigration experience, tips, or ask for advice..."
-            value={newPost.content}
-            onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
-            className="min-h-[100px] bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl"
-          />
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input
-              placeholder="Country"
-              value={newPost.country}
-              onChange={(e) => setNewPost({ ...newPost, country: e.target.value })}
-              className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl"
-            />
-            <Input
-              placeholder="Category (e.g., Green Card)"
-              value={newPost.category}
-              onChange={(e) => setNewPost({ ...newPost, category: e.target.value })}
-              className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl"
-            />
-            <Input
-              placeholder="Stage (e.g., Professional)"
-              value={newPost.stage}
-              onChange={(e) => setNewPost({ ...newPost, stage: e.target.value })}
-              className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl"
-            />
-          </div>
-          
-          <Button 
-            onClick={handleSubmitPost}
-            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-3 rounded-xl font-semibold"
-          >
-            Share Experience
-          </Button>
-        </div>
-      </Card>
+        </Card>
+      )}
 
       {/* Filters */}
       <Card className="bg-gray-800/50 backdrop-blur-xl border-gray-700 rounded-2xl p-6">
