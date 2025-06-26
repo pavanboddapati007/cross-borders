@@ -1,32 +1,29 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Home, MessageSquare, Bot, Newspaper } from 'lucide-react';
+import { Home, MessageSquare, Bot, Newspaper, LogIn } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { AuthDialog } from './AuthDialog';
+import { UserMenu } from './UserMenu';
+
 interface NavigationProps {
   activeSection: string;
   onNavigate: (section: string) => void;
 }
-const Navigation = ({
-  activeSection,
-  onNavigate
-}: NavigationProps) => {
-  const navItems = [{
-    id: 'home',
-    label: 'Home',
-    icon: Home
-  }, {
-    id: 'feed',
-    label: 'Community',
-    icon: MessageSquare
-  }, {
-    id: 'ai-assistant',
-    label: 'AI Assistant',
-    icon: Bot
-  }, {
-    id: 'news',
-    label: 'News',
-    icon: Newspaper
-  }];
-  return <nav className="bg-black/90 backdrop-blur-xl border-b border-gray-800 sticky top-0 z-50">
+
+const Navigation = ({ activeSection, onNavigate }: NavigationProps) => {
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const { user, loading } = useAuth();
+
+  const navItems = [
+    { id: 'home', label: 'Home', icon: Home },
+    { id: 'feed', label: 'Community', icon: MessageSquare },
+    { id: 'ai-assistant', label: 'AI Assistant', icon: Bot },
+    { id: 'news', label: 'News', icon: Newspaper }
+  ];
+
+  return (
+    <nav className="bg-black/90 backdrop-blur-xl border-b border-gray-800 sticky top-0 z-50">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-3">
@@ -49,21 +46,52 @@ const Navigation = ({
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-px bg-white/30 -rotate-45"></div>
               </div>
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">Cross Borders </h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">Cross Borders</h1>
           </div>
           
-          <div className="flex space-x-2">
+          <div className="flex items-center space-x-2">
             {navItems.map(item => {
-            const Icon = item.icon;
-            const isActive = activeSection === item.id;
-            return <Button key={item.id} variant="ghost" onClick={() => onNavigate(item.id)} className={`flex items-center space-x-2 transition-all duration-300 rounded-xl ${isActive ? "bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 border border-cyan-500/30" : "text-gray-300 hover:text-white hover:bg-white/5"}`}>
+              const Icon = item.icon;
+              const isActive = activeSection === item.id;
+              return (
+                <Button
+                  key={item.id}
+                  variant="ghost"
+                  onClick={() => onNavigate(item.id)}
+                  className={`flex items-center space-x-2 transition-all duration-300 rounded-xl ${
+                    isActive 
+                      ? "bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 border border-cyan-500/30" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"
+                  }`}
+                >
                   <Icon size={18} />
                   <span className="hidden md:inline font-medium">{item.label}</span>
-                </Button>;
-          })}
+                </Button>
+              );
+            })}
+            
+            <div className="ml-4">
+              {loading ? (
+                <div className="w-10 h-10 rounded-full bg-gray-700 animate-pulse"></div>
+              ) : user ? (
+                <UserMenu />
+              ) : (
+                <Button
+                  onClick={() => setAuthDialogOpen(true)}
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-4 py-2 rounded-xl font-medium shadow-lg shadow-cyan-500/25 transition-all duration-300 hover:shadow-cyan-500/40"
+                >
+                  <LogIn size={18} className="mr-2" />
+                  <span className="hidden sm:inline">Sign In</span>
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </nav>;
+      
+      <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
+    </nav>
+  );
 };
+
 export default Navigation;
