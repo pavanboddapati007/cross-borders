@@ -24,6 +24,7 @@ const Hero = ({
   const [countryFilter, setCountryFilter] = useState('All Countries');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [stageFilter, setStageFilter] = useState('All Stages');
+  
   const stories: Story[] = [{
     id: '1',
     title: 'Australian PR journey - skilled migration pathway',
@@ -55,6 +56,7 @@ const Hero = ({
     stage: 'Student Transition',
     status: 'Completed'
   }];
+  
   const features = [{
     icon: Users,
     title: "Global Community",
@@ -74,6 +76,7 @@ const Hero = ({
     action: () => onNavigate('news'),
     gradient: "from-blue-500 to-cyan-500"
   }];
+  
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Completed':
@@ -86,6 +89,7 @@ const Hero = ({
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
+
   return <div className="space-y-12 py-8">
       {/* Hero Section */}
       <div className="text-center space-y-8 py-16 relative">
@@ -118,18 +122,18 @@ const Hero = ({
       </div>
 
       {/* Features Grid */}
-      <div className="grid md:grid-cols-3 gap-8 mb-16">
+      <div className="grid md:grid-cols-3 gap-6 mb-16">
         {features.map((feature, index) => {
         const Icon = feature.icon;
-        return <Card key={index} className="group cursor-pointer transition-all duration-500 hover:scale-105 border-0 bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-xl hover:from-gray-800/60 hover:to-gray-700/40 rounded-2xl overflow-hidden">
-              <CardContent className="p-8 text-center space-y-6 relative">
+        return <Card key={index} className="group cursor-pointer transition-all duration-500 hover:scale-105 border border-gray-600/30 bg-gray-800/60 backdrop-blur-xl hover:bg-gray-700/70 rounded-2xl overflow-hidden shadow-lg">
+              <CardContent className="p-6 text-center space-y-4 relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div className={`w-16 h-16 mx-auto rounded-2xl bg-gradient-to-r ${feature.gradient} flex items-center justify-center group-hover:scale-110 transition-all duration-500 shadow-lg`}>
-                  <Icon className="w-8 h-8 text-white" />
+                <div className={`w-12 h-12 mx-auto rounded-xl bg-gradient-to-r ${feature.gradient} flex items-center justify-center group-hover:scale-110 transition-all duration-500 shadow-lg relative z-10`}>
+                  <Icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-white">{feature.title}</h3>
-                <p className="text-gray-300 leading-relaxed">{feature.description}</p>
-                <Button onClick={feature.action} variant="ghost" className="w-full mt-6 bg-white/5 hover:bg-gradient-to-r hover:from-cyan-500/20 hover:to-purple-500/20 border border-gray-700 hover:border-cyan-500/50 rounded-xl transition-all duration-300 backdrop-blur-sm text-base text-gray-950">
+                <h3 className="text-xl font-bold text-white relative z-10">{feature.title}</h3>
+                <p className="text-gray-300 leading-relaxed text-sm relative z-10">{feature.description}</p>
+                <Button onClick={feature.action} variant="ghost" className="w-full mt-4 bg-white/10 hover:bg-gradient-to-r hover:from-cyan-500/20 hover:to-purple-500/20 border border-gray-600/50 hover:border-cyan-500/50 rounded-xl transition-all duration-300 backdrop-blur-sm text-sm text-white relative z-10">
                   Explore Now
                 </Button>
               </CardContent>
