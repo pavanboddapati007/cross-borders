@@ -104,10 +104,7 @@ const Hero = ({
               Immigration Journey
             </span>
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
-            Empowering immigrants with AI-driven guidance, community support, and real-time insights 
-            to make informed decisions on their path to a new life.
-          </p>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">Share your wins, your what-now moments, and everything in between. You're not doing this alone anymore.”</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button onClick={() => onNavigate('feed')} size="lg" className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg shadow-cyan-500/25 transition-all duration-300 hover:shadow-cyan-500/40 hover:scale-105">
               Join Community
