@@ -24,6 +24,7 @@ const Hero = ({
   const [countryFilter, setCountryFilter] = useState('All Countries');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [stageFilter, setStageFilter] = useState('All Stages');
+  
   const stories: Story[] = [{
     id: '1',
     title: 'Australian PR journey - skilled migration pathway',
@@ -55,6 +56,7 @@ const Hero = ({
     stage: 'Student Transition',
     status: 'Completed'
   }];
+  
   const features = [{
     icon: Users,
     title: "Global Community",
@@ -74,6 +76,7 @@ const Hero = ({
     action: () => onNavigate('news'),
     gradient: "from-blue-500 to-cyan-500"
   }];
+  
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Completed':
@@ -86,6 +89,7 @@ const Hero = ({
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
+
   return <div className="space-y-12 py-8">
       {/* Hero Section */}
       <div className="text-center space-y-8 py-16 relative">
@@ -112,7 +116,7 @@ const Hero = ({
             <Button onClick={() => onNavigate('feed')} size="lg" className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg shadow-cyan-500/25 transition-all duration-300 hover:shadow-cyan-500/40 hover:scale-105">
               Join Community
             </Button>
-            <Button onClick={() => onNavigate('ai-assistant')} variant="outline" size="lg" className="border-2 border-purple-500 px-8 py-4 rounded-xl font-semibold backdrop-blur-sm transition-all duration-300 hover:border-purple-400 text-purple-900 bg-zinc-300 hover:bg-zinc-200">AI Assistant (Soon)</Button>
+            <Button onClick={() => onNavigate('ai-assistant')} variant="outline" size="lg" className="border-2 border-purple-500 text-purple-400 hover:bg-purple-500/10 px-8 py-4 rounded-xl font-semibold backdrop-blur-sm transition-all duration-300 hover:border-purple-400">AI Assistant (Soon)</Button>
           </div>
         </div>
       </div>
