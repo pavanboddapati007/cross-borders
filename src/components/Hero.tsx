@@ -271,7 +271,7 @@ const Hero = ({
 
         {/* View All Stories Button */}
         <div className="text-center pt-8">
-          <Button onClick={() => onNavigate('feed')} variant="outline" size="lg" className="border-2 border-gray-700 hover:border-emerald-500 hover:bg-emerald-500/10 px-8 py-4 rounded-xl font-semibold transition-all duration-300 text-green-400">
+          <Button onClick={() => onNavigate('feed')} variant="outline" size="lg" className="border-2 border-gray-700 hover:border-emerald-500 hover:bg-emerald-500/10 px-8 py-4 rounded-xl font-semibold transition-all duration-300 text-zinc-950">
             View All Stories
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
