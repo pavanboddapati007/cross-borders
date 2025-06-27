@@ -57,8 +57,7 @@ const Navigation = ({
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-px bg-white/30 -rotate-45"></div>
               </div>
             </div>
-            <h1 className="font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent text-xl">Cross Borders
-          </h1>
+            <h1 className="font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent text-xl">Cross Borders</h1>
           </div>
           
           <div className="flex items-center space-x-2">
