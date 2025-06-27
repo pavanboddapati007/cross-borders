@@ -1,15 +1,12 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageSquare, Bot, Newspaper, Sparkles, Globe, Users, Filter, Plus, ArrowRight, Heart, TrendingUp, Star, Eye } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
-
 interface HeroProps {
   onNavigate: (section: string) => void;
 }
-
 interface Story {
   id: string;
   title: string;
@@ -26,101 +23,90 @@ interface Story {
   featured: boolean;
   trending: boolean;
 }
-
-const Hero = ({ onNavigate }: HeroProps) => {
+const Hero = ({
+  onNavigate
+}: HeroProps) => {
   const [activeTab, setActiveTab] = useState<'featured' | 'trending'>('featured');
-
-  const stories: Story[] = [
-    {
-      id: '1',
-      title: 'Australian PR journey - skilled migration pathway',
-      author: 'Priya Sharma',
-      country: 'Australia',
-      date: 'Jun 24, 2025',
-      content: 'After 3 years on a temporary visa, finally got my permanent residency! The points system is competitive but fair. I went through the General Skilled Migration route as a software engineer...',
-      category: 'Permanent Residence',
-      stage: 'Skilled Migration',
-      status: 'Completed',
-      likes: 89,
-      comments: 23,
-      views: 1250,
-      featured: true,
-      trending: true
-    },
-    {
-      id: '2',
-      title: 'Canadian Express Entry - Software Developer Path',
-      author: 'Ahmed Hassan',
-      country: 'Canada',
-      date: 'Jun 20, 2025',
-      content: 'Just received my ITA! Scored 472 points in the Express Entry pool. My advice: get your language tests done early (IELTS/CELPIP)...',
-      category: 'Express Entry',
-      stage: 'Professional',
-      status: 'In Progress',
-      likes: 67,
-      comments: 18,
-      views: 890,
-      featured: true,
-      trending: false
-    },
-    {
-      id: '3',
-      title: 'UK Student to Work Visa Transition',
-      author: 'Maria Rodriguez',
-      country: 'United Kingdom',
-      date: 'Jun 18, 2025',
-      content: 'Successfully transitioned from Tier 4 student visa to Skilled Worker visa. The new points-based system is actually quite straightforward...',
-      category: 'Work Visa',
-      stage: 'Student Transition',
-      status: 'Completed',
-      likes: 45,
-      comments: 12,
-      views: 675,
-      featured: false,
-      trending: true
-    },
-    {
-      id: '4',
-      title: 'US Green Card Lottery Success Story',
-      author: 'David Kim',
-      country: 'United States',
-      date: 'Jun 15, 2025',
-      content: 'Against all odds, won the DV lottery and now have my green card! Here\'s my complete journey and tips for future applicants...',
-      category: 'Green Card',
-      stage: 'Diversity Visa',
-      status: 'Completed',
-      likes: 134,
-      comments: 45,
-      views: 2100,
-      featured: true,
-      trending: true
-    }
-  ];
-
-  const features = [
-    {
-      icon: Users,
-      title: "Global Community",
-      description: "Connect with immigrants worldwide. Share experiences, challenges, and celebrate successes together.",
-      action: () => onNavigate('feed'),
-      gradient: "from-emerald-500 to-teal-600"
-    },
-    {
-      icon: Bot,
-      title: "AI Immigration Assistant",
-      description: "Get instant, accurate guidance powered by advanced AI for all your immigration questions.",
-      action: () => onNavigate('ai-assistant'),
-      gradient: "from-teal-500 to-cyan-600"
-    },
-    {
-      icon: Globe,
-      title: "Immigration Insights",
-      description: "Stay ahead with real-time immigration news, policy updates, and expert analysis.",
-      action: () => onNavigate('news'),
-      gradient: "from-cyan-500 to-blue-600"
-    }
-  ];
-
+  const stories: Story[] = [{
+    id: '1',
+    title: 'Australian PR journey - skilled migration pathway',
+    author: 'Priya Sharma',
+    country: 'Australia',
+    date: 'Jun 24, 2025',
+    content: 'After 3 years on a temporary visa, finally got my permanent residency! The points system is competitive but fair. I went through the General Skilled Migration route as a software engineer...',
+    category: 'Permanent Residence',
+    stage: 'Skilled Migration',
+    status: 'Completed',
+    likes: 89,
+    comments: 23,
+    views: 1250,
+    featured: true,
+    trending: true
+  }, {
+    id: '2',
+    title: 'Canadian Express Entry - Software Developer Path',
+    author: 'Ahmed Hassan',
+    country: 'Canada',
+    date: 'Jun 20, 2025',
+    content: 'Just received my ITA! Scored 472 points in the Express Entry pool. My advice: get your language tests done early (IELTS/CELPIP)...',
+    category: 'Express Entry',
+    stage: 'Professional',
+    status: 'In Progress',
+    likes: 67,
+    comments: 18,
+    views: 890,
+    featured: true,
+    trending: false
+  }, {
+    id: '3',
+    title: 'UK Student to Work Visa Transition',
+    author: 'Maria Rodriguez',
+    country: 'United Kingdom',
+    date: 'Jun 18, 2025',
+    content: 'Successfully transitioned from Tier 4 student visa to Skilled Worker visa. The new points-based system is actually quite straightforward...',
+    category: 'Work Visa',
+    stage: 'Student Transition',
+    status: 'Completed',
+    likes: 45,
+    comments: 12,
+    views: 675,
+    featured: false,
+    trending: true
+  }, {
+    id: '4',
+    title: 'US Green Card Lottery Success Story',
+    author: 'David Kim',
+    country: 'United States',
+    date: 'Jun 15, 2025',
+    content: 'Against all odds, won the DV lottery and now have my green card! Here\'s my complete journey and tips for future applicants...',
+    category: 'Green Card',
+    stage: 'Diversity Visa',
+    status: 'Completed',
+    likes: 134,
+    comments: 45,
+    views: 2100,
+    featured: true,
+    trending: true
+  }];
+  const features = [{
+    icon: Users,
+    title: "Global Community",
+    description: "Connect with immigrants worldwide. Share experiences, challenges, and celebrate successes together.",
+    action: () => onNavigate('feed'),
+    gradient: "from-emerald-500 to-teal-600"
+  }, {
+    icon: Bot,
+    title: "AI Immigration Assistant",
+    description: "Get instant, accurate guidance powered by advanced AI for all your immigration questions.",
+    action: () => onNavigate('ai-assistant'),
+    gradient: "from-teal-500 to-cyan-600"
+  }, {
+    icon: Globe,
+    title: "Immigration Insights",
+    description: "Stay ahead with real-time immigration news, policy updates, and expert analysis.",
+    action: () => onNavigate('news'),
+    gradient: "from-cyan-500 to-blue-600"
+  }];
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Completed':
@@ -133,13 +119,8 @@ const Hero = ({ onNavigate }: HeroProps) => {
         return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
-
-  const filteredStories = activeTab === 'featured' 
-    ? stories.filter(story => story.featured)
-    : stories.filter(story => story.trending);
-
-  return (
-    <div className="space-y-20">
+  const filteredStories = activeTab === 'featured' ? stories.filter(story => story.featured) : stories.filter(story => story.trending);
+  return <div className="space-y-20">
       {/* Hero Section */}
       <div className="text-center space-y-8 py-16 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 rounded-3xl blur-3xl"></div>
@@ -162,20 +143,11 @@ const Hero = ({ onNavigate }: HeroProps) => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              onClick={() => onNavigate('feed')} 
-              size="lg" 
-              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all duration-300 hover:shadow-emerald-500/40"
-            >
+            <Button onClick={() => onNavigate('feed')} size="lg" className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all duration-300 hover:shadow-emerald-500/40">
               Start your journey
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
-            <Button 
-              onClick={() => onNavigate('ai-assistant')} 
-              variant="outline" 
-              size="lg" 
-              className="border-2 border-gray-600 text-gray-300 hover:text-white hover:border-gray-500 px-8 py-4 rounded-xl font-semibold backdrop-blur-sm transition-all duration-300 bg-gray-900/50 hover:bg-gray-800/50"
-            >
+            <Button onClick={() => onNavigate('ai-assistant')} variant="outline" size="lg" className="border-2 border-gray-600 text-gray-300 hover:text-white hover:border-gray-500 px-8 py-4 rounded-xl font-semibold backdrop-blur-sm transition-all duration-300 bg-gray-900/50 hover:bg-gray-800/50">
               Try AI Assistant
             </Button>
           </div>
@@ -185,13 +157,8 @@ const Hero = ({ onNavigate }: HeroProps) => {
       {/* Features Grid */}
       <div className="grid md:grid-cols-3 gap-8">
         {features.map((feature, index) => {
-          const Icon = feature.icon;
-          return (
-            <Card 
-              key={index} 
-              className="group cursor-pointer transition-all duration-300 hover:scale-105 border border-gray-800/50 bg-gray-900/50 backdrop-blur-xl hover:bg-gray-800/50 rounded-2xl overflow-hidden"
-              onClick={feature.action}
-            >
+        const Icon = feature.icon;
+        return <Card key={index} className="group cursor-pointer transition-all duration-300 hover:scale-105 border border-gray-800/50 bg-gray-900/50 backdrop-blur-xl hover:bg-gray-800/50 rounded-2xl overflow-hidden" onClick={feature.action}>
               <CardContent className="p-8 text-center space-y-6 relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/5 to-teal-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className={`w-16 h-16 mx-auto rounded-2xl bg-gradient-to-r ${feature.gradient} flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg relative z-10`}>
@@ -199,17 +166,13 @@ const Hero = ({ onNavigate }: HeroProps) => {
                 </div>
                 <h3 className="text-2xl font-bold text-white relative z-10">{feature.title}</h3>
                 <p className="text-gray-300 leading-relaxed relative z-10">{feature.description}</p>
-                <Button 
-                  variant="ghost" 
-                  className="w-full mt-6 bg-white/5 hover:bg-white/10 border border-gray-700 hover:border-gray-600 rounded-xl transition-all duration-300 backdrop-blur-sm text-white relative z-10"
-                >
+                <Button variant="ghost" className="w-full mt-6 bg-white/5 hover:bg-white/10 border border-gray-700 hover:border-gray-600 rounded-xl transition-all duration-300 backdrop-blur-sm text-white relative z-10">
                   Explore Now
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </CardContent>
-            </Card>
-          );
-        })}
+            </Card>;
+      })}
       </div>
 
       {/* Featured & Trending Stories Section */}
@@ -219,10 +182,7 @@ const Hero = ({ onNavigate }: HeroProps) => {
             <h2 className="text-4xl font-bold text-white mb-2">Success Stories</h2>
             <p className="text-gray-400">Inspiring journeys from our community</p>
           </div>
-          <Button 
-            onClick={() => onNavigate('feed')}
-            className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-500/25"
-          >
+          <Button onClick={() => onNavigate('feed')} className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-500/25">
             <Plus className="w-5 h-5" />
             Share Your Story
           </Button>
@@ -230,27 +190,11 @@ const Hero = ({ onNavigate }: HeroProps) => {
 
         {/* Tab Navigation */}
         <div className="flex gap-4">
-          <Button
-            onClick={() => setActiveTab('featured')}
-            variant={activeTab === 'featured' ? "default" : "outline"}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${
-              activeTab === 'featured' 
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25' 
-                : 'border-gray-700 text-gray-300 hover:text-white hover:border-gray-600 bg-gray-900/50'
-            }`}
-          >
+          <Button onClick={() => setActiveTab('featured')} variant={activeTab === 'featured' ? "default" : "outline"} className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${activeTab === 'featured' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25' : 'border-gray-700 text-gray-300 hover:text-white hover:border-gray-600 bg-gray-900/50'}`}>
             <Star className="w-5 h-5" />
             Featured Stories
           </Button>
-          <Button
-            onClick={() => setActiveTab('trending')}
-            variant={activeTab === 'trending' ? "default" : "outline"}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${
-              activeTab === 'trending' 
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25' 
-                : 'border-gray-700 text-gray-300 hover:text-white hover:border-gray-600 bg-gray-900/50'
-            }`}
-          >
+          <Button onClick={() => setActiveTab('trending')} variant={activeTab === 'trending' ? "default" : "outline"} className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${activeTab === 'trending' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25' : 'border-gray-700 text-gray-300 hover:text-white hover:border-gray-600 bg-gray-900/50'}`}>
             <TrendingUp className="w-5 h-5" />
             Trending Now
           </Button>
@@ -258,28 +202,19 @@ const Hero = ({ onNavigate }: HeroProps) => {
 
         {/* Stories */}
         <div className="space-y-6">
-          {filteredStories.map(story => (
-            <Card 
-              key={story.id} 
-              className="bg-gray-900/30 backdrop-blur-xl border-gray-800/50 rounded-2xl p-8 hover:bg-gray-800/30 transition-all duration-300 hover:border-gray-700/50 cursor-pointer group"
-              onClick={() => onNavigate('feed')}
-            >
+          {filteredStories.map(story => <Card key={story.id} className="bg-gray-900/30 backdrop-blur-xl border-gray-800/50 rounded-2xl p-8 hover:bg-gray-800/30 transition-all duration-300 hover:border-gray-700/50 cursor-pointer group" onClick={() => onNavigate('feed')}>
               <div className="space-y-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <h3 className="text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors duration-300">{story.title}</h3>
-                    {story.featured && (
-                      <Badge className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border-emerald-500/30">
+                    {story.featured && <Badge className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border-emerald-500/30">
                         <Star className="w-3 h-3 mr-1" />
                         Featured
-                      </Badge>
-                    )}
-                    {story.trending && (
-                      <Badge className="bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-300 border-orange-500/30">
+                      </Badge>}
+                    {story.trending && <Badge className="bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-300 border-orange-500/30">
                         <TrendingUp className="w-3 h-3 mr-1" />
                         Trending
-                      </Badge>
-                    )}
+                      </Badge>}
                   </div>
                   <div className="flex gap-2 flex-shrink-0">
                     <Badge className="bg-gray-800 text-gray-200 border-gray-700">
@@ -324,36 +259,24 @@ const Hero = ({ onNavigate }: HeroProps) => {
                     <span className="font-medium">{story.views}</span>
                   </div>
                   <div className="ml-auto">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10"
-                    >
+                    <Button variant="ghost" size="sm" className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10">
                       Read More
                       <ArrowRight className="w-4 h-4 ml-1" />
                     </Button>
                   </div>
                 </div>
               </div>
-            </Card>
-          ))}
+            </Card>)}
         </div>
 
         {/* View All Stories Button */}
         <div className="text-center pt-8">
-          <Button 
-            onClick={() => onNavigate('feed')}
-            variant="outline"
-            size="lg"
-            className="border-2 border-gray-700 text-gray-300 hover:text-white hover:border-emerald-500 hover:bg-emerald-500/10 px-8 py-4 rounded-xl font-semibold transition-all duration-300"
-          >
+          <Button onClick={() => onNavigate('feed')} variant="outline" size="lg" className="border-2 border-gray-700 hover:border-emerald-500 hover:bg-emerald-500/10 px-8 py-4 rounded-xl font-semibold transition-all duration-300 text-green-400">
             View All Stories
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Hero;
