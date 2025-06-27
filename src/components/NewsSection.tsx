@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, ExternalLink, Search, RefreshCw } from 'lucide-react';
+import { Clock, ExternalLink, Search, RefreshCw, AlertCircle } from 'lucide-react';
 import { fetchImmigrationNews } from '../services/newsService';
 
 interface NewsItem {
@@ -27,6 +26,7 @@ const NewsSection = () => {
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Load news on component mount
   useEffect(() => {
@@ -35,26 +35,22 @@ const NewsSection = () => {
 
   const loadNews = async () => {
     setLoading(true);
+    setError(null);
+    console.log('Loading news...');
+    
     try {
       const news = await fetchImmigrationNews();
+      console.log('News loaded successfully:', news.length, 'items');
       setNewsItems(news);
       setLastUpdated(new Date());
+      
+      if (news.length === 0) {
+        setError('No news items found');
+      }
     } catch (error) {
       console.error('Failed to load news:', error);
-      // Fallback to sample data if RSS fails
-      setNewsItems([
-        {
-          id: '1',
-          title: 'USCIS Extends Automatic Extension Period for Employment Authorization Documents',
-          summary: 'USCIS announced an extension of the automatic extension period for certain Employment Authorization Documents (EADs) from 180 days to 540 days for qualifying renewal applicants.',
-          category: 'Policy Update',
-          country: 'USA',
-          publishedAt: '2024-01-15',
-          source: 'USCIS',
-          urgent: true,
-          link: '#'
-        }
-      ]);
+      setError('Failed to load news. Please try refreshing.');
+      // Don't set empty array, keep existing items if any
     } finally {
       setLoading(false);
     }
@@ -79,6 +75,7 @@ const NewsSection = () => {
       const diffTime = Math.abs(now.getTime() - date.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
+      if (diffDays === 0) return 'Today';
       if (diffDays === 1) return '1 day ago';
       if (diffDays < 7) return `${diffDays} days ago`;
       return date.toLocaleDateString();
@@ -114,6 +111,12 @@ const NewsSection = () => {
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
+          </div>
+        )}
+        {error && (
+          <div className="flex items-center justify-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+            <AlertCircle className="w-4 h-4" />
+            <span>{error}</span>
           </div>
         )}
       </div>
@@ -170,7 +173,7 @@ const NewsSection = () => {
       )}
 
       {/* News Grid */}
-      {!loading && (
+      {!loading && filteredNews.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredNews.map((item) => (
             <Card key={item.id} className="bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer" onClick={() => handleNewsClick(item.link)}>
@@ -223,7 +226,7 @@ const NewsSection = () => {
         </div>
       )}
 
-      {!loading && filteredNews.length === 0 && (
+      {!loading && filteredNews.length === 0 && !error && (
         <Card className="bg-gray-50 border-gray-200">
           <CardContent className="text-center py-12">
             <p className="text-gray-500">No news items found matching your criteria.</p>
