@@ -26,11 +26,17 @@ const Index = () => {
 
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-blue-500/5"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-purple-900/20"></div>
+      <div className="min-h-screen bg-gray-950">
+        {/* Background Pattern */}
+        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-gray-950 to-black"></div>
+        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-emerald-900/20 via-transparent to-transparent"></div>
+        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-teal-900/20 via-transparent to-transparent"></div>
+        
+        {/* Grid Pattern */}
+        <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100px_100px]"></div>
+        
         <Navigation activeSection={activeSection} onNavigate={setActiveSection} />
-        <main className="container mx-auto px-4 py-4 relative z-10">
+        <main className="container mx-auto px-6 py-8 relative z-10">
           {renderContent()}
         </main>
         <Toaster />
