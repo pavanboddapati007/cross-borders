@@ -29,44 +29,40 @@ const Navigation = ({
     <nav className="bg-gray-950/80 backdrop-blur-xl border-b border-gray-800/50 sticky top-0 z-50">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-4">
-            {/* Modern AI Logo */}
-            <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-400/25">
-                {/* AI Circuit Pattern */}
-                <div className="relative w-6 h-6">
-                  {/* Central processing unit */}
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-sm"></div>
-                  
-                  {/* Neural network nodes */}
-                  <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white/90 rounded-full"></div>
-                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white/90 rounded-full"></div>
-                  <div className="absolute top-1/2 left-1 transform -translate-y-1/2 w-1 h-1 bg-white/90 rounded-full"></div>
-                  <div className="absolute top-1/2 right-1 transform -translate-y-1/2 w-1 h-1 bg-white/90 rounded-full"></div>
-                  
-                  {/* Corner nodes */}
-                  <div className="absolute top-1 left-1 w-0.5 h-0.5 bg-white/70 rounded-full"></div>
-                  <div className="absolute top-1 right-1 w-0.5 h-0.5 bg-white/70 rounded-full"></div>
-                  <div className="absolute bottom-1 left-1 w-0.5 h-0.5 bg-white/70 rounded-full"></div>
-                  <div className="absolute bottom-1 right-1 w-0.5 h-0.5 bg-white/70 rounded-full"></div>
-                  
-                  {/* Connection lines */}
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-px bg-white/50"></div>
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-px h-4 bg-white/50"></div>
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-px bg-white/40 rotate-45"></div>
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-px bg-white/40 -rotate-45"></div>
+          <div className="flex flex-col">
+            <div className="flex items-center space-x-3">
+              {/* Simple Geometric Logo */}
+              <div className="relative">
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-400/25">
+                  {/* Bridge/Connection Symbol */}
+                  <div className="relative w-6 h-6">
+                    {/* Two pillars representing different sides */}
+                    <div className="absolute left-0 top-1 w-1 h-4 bg-white rounded-sm"></div>
+                    <div className="absolute right-0 top-1 w-1 h-4 bg-white rounded-sm"></div>
+                    
+                    {/* Connecting bridge arc */}
+                    <div className="absolute top-1.5 left-0.5 w-5 h-2 border-t-2 border-white rounded-t-full"></div>
+                    
+                    {/* Small dots representing people/movement */}
+                    <div className="absolute top-2 left-2 w-0.5 h-0.5 bg-white/90 rounded-full"></div>
+                    <div className="absolute top-2.5 left-3 w-0.5 h-0.5 bg-white/90 rounded-full"></div>
+                    <div className="absolute top-2 right-2 w-0.5 h-0.5 bg-white/90 rounded-full"></div>
+                  </div>
                 </div>
               </div>
+              
+              <div>
+                <h1 className="font-bold text-xl leading-tight">
+                  <span className="bg-gradient-to-r from-white via-gray-100 to-gray-200 bg-clip-text text-transparent">
+                    Cross
+                  </span>
+                  <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent ml-1">
+                    Borders
+                  </span>
+                </h1>
+                <p className="text-gray-400 text-xs font-medium">The real side of immigration</p>
+              </div>
             </div>
-            
-            <h1 className="font-bold text-xl">
-              <span className="bg-gradient-to-r from-white via-gray-100 to-gray-200 bg-clip-text text-transparent">
-                Cross
-              </span>
-              <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent ml-1">
-                Borders
-              </span>
-            </h1>
           </div>
           
           <div className="flex items-center space-x-1">
@@ -77,31 +73,33 @@ const Navigation = ({
                 <Button
                   key={item.id}
                   variant="ghost"
+                  size="sm"
                   onClick={() => onNavigate(item.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg transition-all duration-200 ${
                     isActive 
                       ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
                       : "text-gray-300 hover:text-white hover:bg-white/5"
                   }`}
                 >
-                  <Icon size={18} />
-                  <span className="hidden md:inline font-medium">{item.label}</span>
+                  <Icon size={16} />
+                  <span className="hidden lg:inline font-medium text-sm">{item.label}</span>
                 </Button>
               );
             })}
             
             <div className="ml-4 pl-4 border-l border-gray-800">
               {loading ? (
-                <div className="w-10 h-10 rounded-full bg-gray-800 animate-pulse"></div>
+                <div className="w-8 h-8 rounded-full bg-gray-800 animate-pulse"></div>
               ) : user ? (
                 <UserMenu />
               ) : (
                 <Button 
                   onClick={() => setAuthDialogOpen(true)}
-                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-2 rounded-lg font-medium shadow-lg shadow-emerald-500/25 transition-all duration-200 hover:shadow-emerald-500/40"
+                  size="sm"
+                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 py-1.5 rounded-lg font-medium shadow-lg shadow-emerald-500/25 transition-all duration-200 hover:shadow-emerald-500/40"
                 >
-                  <LogIn size={18} className="mr-2" />
-                  <span className="hidden sm:inline">Sign In</span>
+                  <LogIn size={16} className="mr-1.5" />
+                  <span className="hidden sm:inline text-sm">Sign In</span>
                 </Button>
               )}
             </div>
