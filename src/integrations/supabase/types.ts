@@ -9,6 +9,92 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      post_replies: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          post_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          post_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_replies_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          category: string | null
+          classification: string | null
+          classification_confidence: number | null
+          classified_at: string | null
+          comments: number | null
+          content: string
+          country: string | null
+          created_at: string
+          id: string
+          likes: number | null
+          stage: string | null
+          status: string | null
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          classification?: string | null
+          classification_confidence?: number | null
+          classified_at?: string | null
+          comments?: number | null
+          content: string
+          country?: string | null
+          created_at?: string
+          id?: string
+          likes?: number | null
+          stage?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          classification?: string | null
+          classification_confidence?: number | null
+          classified_at?: string | null
+          comments?: number | null
+          content?: string
+          country?: string | null
+          created_at?: string
+          id?: string
+          likes?: number | null
+          stage?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

@@ -1,73 +1,42 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MessageSquarePlus, Heart, MessageSquare, Share, Users, Globe, Filter, Plus, X } from 'lucide-react';
+import { MessageSquarePlus, Heart, MessageSquare, Share, Users, Globe, Filter, Plus, X, Sparkles } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useGroqClassification } from '@/hooks/useGroqClassification';
+import { toast } from '@/hooks/use-toast';
 
 interface Post {
   id: string;
-  author: string;
-  country: string;
+  user_id: string;
   title: string;
   content: string;
-  timestamp: string;
+  country: string | null;
+  category: string | null;
+  stage: string | null;
+  status: string | null;
   likes: number;
   comments: number;
-  category: string;
-  stage: string;
-  status: 'Completed' | 'In Progress' | 'Planning';
+  classification: string | null;
+  classification_confidence: number | null;
+  created_at: string;
 }
 
 const PostFeed = () => {
+  const { user } = useAuth();
+  const { classifyPost, isClassifying } = useGroqClassification();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
   const [countryFilter, setCountryFilter] = useState('All Countries');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [stageFilter, setStageFilter] = useState('All Stages');
   const [showCreatePost, setShowCreatePost] = useState(false);
-
-  const [posts, setPosts] = useState<Post[]>([
-    {
-      id: '1',
-      author: 'Maria Rodriguez',
-      country: 'Spain',
-      title: 'Finally got my Green Card!',
-      content: 'After 3 years of waiting, I finally received my green card today! The process was challenging but worth it. Happy to share my experience and help others going through the same journey. The key was staying organized with all documents and being patient with the timeline.',
-      timestamp: 'Jun 24, 2025',
-      likes: 47,
-      comments: 12,
-      category: 'Green Card',
-      stage: 'Professional',
-      status: 'Completed'
-    },
-    {
-      id: '2',
-      author: 'Ahmed Hassan',
-      country: 'Canada',
-      title: 'Tips for Canadian Express Entry',
-      content: 'Just wanted to share some tips that helped me with my Canadian Express Entry application. Language tests are crucial - invest time in improving your scores. Also, getting your credentials evaluated early saves a lot of time later.',
-      timestamp: 'Jun 20, 2025',
-      likes: 23,
-      comments: 8,
-      category: 'Express Entry',
-      stage: 'Skilled Migration',
-      status: 'In Progress'
-    },
-    {
-      id: '3',
-      author: 'Priya Sharma',
-      country: 'United Kingdom',
-      title: 'Navigating UK Student Visa',
-      content: 'Currently going through the UK student visa process. The financial requirements can be overwhelming, but there are ways to manage it. Happy to connect with others in similar situations.',
-      timestamp: 'Jun 18, 2025',
-      likes: 18,
-      comments: 15,
-      category: 'Student Visa',
-      stage: 'Student Transition',
-      status: 'Planning'
-    }
-  ]);
 
   const [newPost, setNewPost] = useState({
     title: '',
@@ -77,7 +46,33 @@ const PostFeed = () => {
     stage: ''
   });
 
-  const getStatusColor = (status: string) => {
+  // Fetch posts from Supabase
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPosts(data || []);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load posts",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusColor = (status: string | null) => {
     switch (status) {
       case 'Completed':
         return 'bg-green-100 text-green-800 border-green-200';
@@ -90,27 +85,108 @@ const PostFeed = () => {
     }
   };
 
-  const handleSubmitPost = () => {
-    if (newPost.title && newPost.content) {
-      const post: Post = {
-        id: Date.now().toString(),
-        author: 'You',
-        country: newPost.country || 'Unknown',
-        title: newPost.title,
-        content: newPost.content,
-        timestamp: 'Just now',
-        likes: 0,
-        comments: 0,
-        category: newPost.category || 'General',
-        stage: newPost.stage || 'Planning',
-        status: 'Planning'
-      };
-      
-      setPosts([post, ...posts]);
-      setNewPost({ title: '', content: '', country: '', category: '', stage: '' });
-      setShowCreatePost(false);
+  const getClassificationColor = (classification: string | null) => {
+    switch (classification) {
+      case 'immigration_process':
+        return 'bg-blue-100 text-blue-800';
+      case 'visa_work':
+        return 'bg-purple-100 text-purple-800';
+      case 'visa_student':
+        return 'bg-indigo-100 text-indigo-800';
+      case 'green_card':
+        return 'bg-green-100 text-green-800';
+      case 'scam_warning':
+        return 'bg-red-100 text-red-800';
+      case 'success_story':
+        return 'bg-emerald-100 text-emerald-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
+
+  const handleSubmitPost = async () => {
+    if (!newPost.title || !newPost.content || !user) {
+      toast({
+        title: "Error",
+        description: "Please fill in required fields and ensure you're logged in",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .insert({
+          user_id: user.id,
+          title: newPost.title,
+          content: newPost.content,
+          country: newPost.country || null,
+          category: newPost.category || null,
+          stage: newPost.stage || null,
+          status: 'Planning'
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Classify the post using Groq
+      try {
+        await classifyPost(
+          data.id,
+          newPost.title,
+          newPost.content,
+          newPost.country,
+          newPost.category
+        );
+        toast({
+          title: "Success",
+          description: "Post created and classified successfully!",
+        });
+      } catch (classificationError) {
+        console.error('Classification failed:', classificationError);
+        toast({
+          title: "Post Created",
+          description: "Post created but classification failed",
+        });
+      }
+
+      // Reset form and refresh posts
+      setNewPost({ title: '', content: '', country: '', category: '', stage: '' });
+      setShowCreatePost(false);
+      fetchPosts();
+      
+    } catch (error) {
+      console.error('Error creating post:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create post",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleClassifyPost = async (post: Post) => {
+    try {
+      await classifyPost(post.id, post.title, post.content, post.country || '', post.category || '');
+      toast({
+        title: "Success",
+        description: "Post classified successfully!",
+      });
+      fetchPosts(); // Refresh to show classification
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to classify post",
+        variant: "destructive"
+      });
+    }
+  };
+
+  if (loading) {
+    return <div className="text-white text-center py-8">Loading posts...</div>;
+  }
 
   return (
     <div className="space-y-12 py-8">
@@ -135,7 +211,7 @@ const PostFeed = () => {
         </Button>
       </div>
 
-      {/* Create Post Card - Only show when showCreatePost is true */}
+      {/* Create Post Card */}
       {showCreatePost && (
         <Card className="bg-gray-800/50 backdrop-blur-xl border-gray-700 rounded-2xl p-8">
           <div className="space-y-6">
@@ -181,62 +257,14 @@ const PostFeed = () => {
             
             <Button 
               onClick={handleSubmitPost}
+              disabled={isClassifying}
               className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-3 rounded-xl font-semibold"
             >
-              Share Experience
+              {isClassifying ? 'Creating & Classifying...' : 'Share Experience'}
             </Button>
           </div>
         </Card>
       )}
-
-      {/* Filters */}
-      <Card className="bg-gray-800/50 backdrop-blur-xl border-gray-700 rounded-2xl p-6">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 text-gray-300">
-            <Filter className="w-5 h-5" />
-            <span className="font-medium">Filter by:</span>
-          </div>
-          
-          <Select value={countryFilter} onValueChange={setCountryFilter}>
-            <SelectTrigger className="w-48 bg-gray-700/50 border-gray-600 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-800 border-gray-600">
-              <SelectItem value="All Countries">All Countries</SelectItem>
-              <SelectItem value="Australia">Australia</SelectItem>
-              <SelectItem value="Canada">Canada</SelectItem>
-              <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-              <SelectItem value="United States">United States</SelectItem>
-              <SelectItem value="Spain">Spain</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-48 bg-gray-700/50 border-gray-600 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-800 border-gray-600">
-              <SelectItem value="All Types">All Types</SelectItem>
-              <SelectItem value="Green Card">Green Card</SelectItem>
-              <SelectItem value="Express Entry">Express Entry</SelectItem>
-              <SelectItem value="Student Visa">Student Visa</SelectItem>
-              <SelectItem value="Work Visa">Work Visa</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={stageFilter} onValueChange={setStageFilter}>
-            <SelectTrigger className="w-48 bg-gray-700/50 border-gray-600 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-800 border-gray-600">
-              <SelectItem value="All Stages">All Stages</SelectItem>
-              <SelectItem value="Professional">Professional</SelectItem>
-              <SelectItem value="Skilled Migration">Skilled Migration</SelectItem>
-              <SelectItem value="Student Transition">Student Transition</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </Card>
 
       {/* Posts Feed */}
       <div className="space-y-6">
@@ -245,27 +273,39 @@ const PostFeed = () => {
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <h3 className="text-2xl font-bold text-white">{post.title}</h3>
-                <div className="flex gap-2">
-                  <Badge className="bg-gray-700 text-gray-300 border-gray-600">
-                    {post.category}
-                  </Badge>
-                  <Badge className={getStatusColor(post.status)}>
-                    {post.status}
-                  </Badge>
+                <div className="flex gap-2 flex-wrap">
+                  {post.category && (
+                    <Badge className="bg-gray-700 text-gray-300 border-gray-600">
+                      {post.category}
+                    </Badge>
+                  )}
+                  {post.status && (
+                    <Badge className={getStatusColor(post.status)}>
+                      {post.status}
+                    </Badge>
+                  )}
+                  {post.classification && (
+                    <Badge className={getClassificationColor(post.classification)}>
+                      <Sparkles className="w-3 h-3 mr-1" />
+                      {post.classification.replace('_', ' ')}
+                    </Badge>
+                  )}
                 </div>
               </div>
               
               <div className="flex items-center gap-6 text-gray-400">
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4" />
-                  <span>{post.author}</span>
+                  <span>User</span>
                 </div>
+                {post.country && (
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4" />
+                    <span>{post.country}</span>
+                  </div>
+                )}
                 <div className="flex items-center gap-2">
-                  <Globe className="w-4 h-4" />
-                  <span>{post.country}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span>{post.timestamp}</span>
+                  <span>{new Date(post.created_at).toLocaleDateString()}</span>
                 </div>
               </div>
               
@@ -273,24 +313,46 @@ const PostFeed = () => {
                 {post.content}
               </p>
               
-              <div className="flex items-center space-x-6 pt-2">
-                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-400 hover:bg-red-400/10">
-                  <Heart className="w-4 h-4 mr-2" />
-                  {post.likes}
-                </Button>
-                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-blue-400 hover:bg-blue-400/10">
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  {post.comments}
-                </Button>
-                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-green-400 hover:bg-green-400/10">
-                  <Share className="w-4 h-4 mr-2" />
-                  Share
-                </Button>
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center space-x-6">
+                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-400 hover:bg-red-400/10">
+                    <Heart className="w-4 h-4 mr-2" />
+                    {post.likes || 0}
+                  </Button>
+                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-blue-400 hover:bg-blue-400/10">
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    {post.comments || 0}
+                  </Button>
+                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-green-400 hover:bg-green-400/10">
+                    <Share className="w-4 h-4 mr-2" />
+                    Share
+                  </Button>
+                </div>
+                
+                {!post.classification && user && (
+                  <Button 
+                    onClick={() => handleClassifyPost(post)}
+                    disabled={isClassifying}
+                    size="sm"
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    {isClassifying ? 'Classifying...' : 'Classify'}
+                  </Button>
+                )}
               </div>
             </div>
           </Card>
         ))}
       </div>
+
+      {posts.length === 0 && (
+        <div className="text-center text-gray-400 py-12">
+          <MessageSquarePlus className="w-16 h-16 mx-auto mb-4 text-gray-600" />
+          <h3 className="text-xl font-semibold mb-2">No posts yet</h3>
+          <p>Be the first to share your immigration story!</p>
+        </div>
+      )}
     </div>
   );
 };

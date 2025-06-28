@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Bot, User, Send } from 'lucide-react';
+import { Bot, User, Send, Sparkles } from 'lucide-react';
+import { useGroqAssistant } from '@/hooks/useGroqAssistant';
+import { toast } from '@/hooks/use-toast';
 
 interface Message {
   id: string;
@@ -15,17 +17,17 @@ interface Message {
 }
 
 const AIAssistant = () => {
+  const { askQuestion, isLoading } = useGroqAssistant();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: 'Hello! I\'m your AI Immigration Assistant. I can help you with questions about visa processes, documentation requirements, timelines, and immigration policies. How can I assist you today?',
+      content: 'Hello! I\'m your AI Immigration Assistant powered by real community experiences. I can help you with questions about visa processes, documentation requirements, timelines, and immigration policies based on actual user stories and my knowledge. How can I assist you today?',
       isUser: false,
       timestamp: new Date().toLocaleTimeString()
     }
   ]);
   
   const [inputMessage, setInputMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
 
   const commonQuestions = [
     'How long does a green card application take?',
@@ -46,48 +48,37 @@ const AIAssistant = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentQuestion = inputMessage;
     setInputMessage('');
-    setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse = generateAIResponse(inputMessage);
+    try {
+      const response = await askQuestion(currentQuestion);
+      
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: aiResponse,
+        content: response,
         isUser: false,
         timestamp: new Date().toLocaleTimeString()
       };
       
       setMessages(prev => [...prev, aiMessage]);
-      setIsTyping(false);
-    }, 1500);
-  };
-
-  const generateAIResponse = (question: string): string => {
-    const q = question.toLowerCase();
-    
-    if (q.includes('green card') || q.includes('permanent resident')) {
-      return 'Green card processing times vary by category and country. Generally, family-based applications can take 1-3 years, while employment-based applications may take 6 months to several years depending on your priority date and country of birth. I recommend checking the USCIS processing times for your specific case type and service center.';
+    } catch (error) {
+      console.error('AI Assistant error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to get response from AI assistant",
+        variant: "destructive"
+      });
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "I apologize, but I'm having trouble processing your question right now. Please try again later or contact support if the issue persists.",
+        isUser: false,
+        timestamp: new Date().toLocaleTimeString()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
     }
-    
-    if (q.includes('student visa') || q.includes('f-1')) {
-      return 'For a student visa (F-1), you\'ll need: 1) Form I-20 from your school, 2) Valid passport, 3) SEVIS fee payment receipt, 4) Financial documents showing ability to pay, 5) Academic transcripts, 6) English proficiency test scores. The interview is usually scheduled within 2-4 weeks of application.';
-    }
-    
-    if (q.includes('work') && q.includes('asylum')) {
-      return 'Yes, you can apply for work authorization 150 days after filing your asylum application, but you cannot receive the employment authorization document (EAD) until at least 180 days have passed since filing. You must file Form I-765 to request work authorization.';
-    }
-    
-    if (q.includes('case status') || q.includes('check status')) {
-      return 'You can check your case status online at the USCIS website using your receipt number. You can also call the USCIS Contact Center at 1-800-375-5283. Make sure to have your receipt number ready when checking your status.';
-    }
-    
-    if (q.includes('citizenship') || q.includes('naturalization')) {
-      return 'To apply for U.S. citizenship, you must: 1) Be 18+ years old, 2) Be a permanent resident for 5 years (or 3 years if married to a U.S. citizen), 3) Have continuous residence in the U.S., 4) Be physically present in the U.S. for at least half the required period, 5) Pass English and civics tests, 6) Demonstrate good moral character.';
-    }
-    
-    return 'Thank you for your question about immigration. While I can provide general guidance, immigration law is complex and individual cases vary significantly. I recommend consulting with a qualified immigration attorney for personalized advice. Is there a specific aspect of immigration law you\'d like me to explain in general terms?';
   };
 
   const handleQuickQuestion = (question: string) => {
@@ -100,10 +91,16 @@ const AIAssistant = () => {
         <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
           AI Immigration Assistant
         </h2>
-        <p className="text-gray-600">Get instant guidance on immigration processes and requirements</p>
-        <Badge className="bg-green-100 text-green-800 border-green-200">
-          ✓ Trained on Official Immigration Guidelines
-        </Badge>
+        <p className="text-gray-600">Get instant guidance powered by real community experiences and official immigration guidelines</p>
+        <div className="flex gap-2 justify-center">
+          <Badge className="bg-green-100 text-green-800 border-green-200">
+            <Sparkles className="w-3 h-3 mr-1" />
+            Powered by Groq AI
+          </Badge>
+          <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+            ✓ Real User Experiences
+          </Badge>
+        </div>
       </div>
 
       {/* Quick Questions */}
@@ -119,6 +116,7 @@ const AIAssistant = () => {
                 variant="outline"
                 className="text-left h-auto p-3 hover:bg-white hover:shadow-md transition-all duration-200"
                 onClick={() => handleQuickQuestion(question)}
+                disabled={isLoading}
               >
                 {question}
               </Button>
@@ -151,14 +149,14 @@ const AIAssistant = () => {
                         : 'bg-gray-100 text-gray-800'
                     }`}
                   >
-                    <p className="text-sm leading-relaxed">{message.content}</p>
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">{message.timestamp}</p>
                 </div>
               </div>
             ))}
             
-            {isTyping && (
+            {isLoading && (
               <div className="flex space-x-3">
                 <Avatar className="w-8 h-8">
                   <AvatarFallback className="bg-green-600 text-white">
@@ -184,12 +182,13 @@ const AIAssistant = () => {
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Ask about immigration processes, requirements, or timelines..."
                 className="flex-1 border-gray-200 focus:border-blue-500"
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
+                disabled={isLoading}
               />
               <Button
                 onClick={handleSendMessage}
                 className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white"
-                disabled={!inputMessage.trim() || isTyping}
+                disabled={!inputMessage.trim() || isLoading}
               >
                 <Send className="w-4 h-4" />
               </Button>
@@ -202,7 +201,7 @@ const AIAssistant = () => {
       <Card className="bg-amber-50 border-amber-200">
         <CardContent className="p-4">
           <p className="text-sm text-amber-800">
-            <strong>Disclaimer:</strong> This AI assistant provides general information only and should not be considered legal advice. 
+            <strong>Disclaimer:</strong> This AI assistant provides general information based on community experiences and should not be considered legal advice. 
             Immigration law is complex and individual cases vary. Always consult with a qualified immigration attorney for personalized guidance.
           </p>
         </CardContent>
