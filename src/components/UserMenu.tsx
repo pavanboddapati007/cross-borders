@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { User, LogOut, Settings } from 'lucide-react';
 
 export const UserMenu: React.FC = () => {
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
 
   if (!user) return null;
 
@@ -24,8 +24,8 @@ export const UserMenu: React.FC = () => {
       .slice(0, 2);
   };
 
-  const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
-  const avatarUrl = user.user_metadata?.avatar_url;
+  const displayName = profile?.username || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+  const avatarUrl = profile?.avatar_url || user.user_metadata?.avatar_url;
 
   return (
     <DropdownMenu>
@@ -44,7 +44,7 @@ export const UserMenu: React.FC = () => {
           <div className="flex flex-col space-y-1 leading-none">
             <p className="font-medium text-white">{displayName}</p>
             <p className="w-[200px] truncate text-sm text-gray-400">
-              {user.email}
+              Anonymous user
             </p>
           </div>
         </div>
