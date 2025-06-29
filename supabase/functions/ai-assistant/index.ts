@@ -40,7 +40,7 @@ serve(async (req) => {
       return `Post: ${post.title}\nContent: ${post.content}\nClassification: ${post.classification || 'N/A'}\nReplies: ${replies}\n---`
     }).join('\n') || ''
 
-    // Call Groq API
+    // Call Groq API with Llama 3 70B model
     const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -48,25 +48,28 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'compound-beta-mini',
+        model: 'llama3-70b-8192',
         messages: [
           {
             role: 'system',
-            content: `You are an AI Immigration Assistant. Answer questions about immigration using the provided context from real user experiences and your knowledge.
-            
-            If the context contains relevant information, prioritize that. If not, use your general immigration knowledge.
-            Always be helpful, accurate, and include a disclaimer that this is general information and users should consult with immigration attorneys for personalized advice.
-            
-            Context from user posts and replies:
-            ${context}`
+            content: `You are a professional immigration advisor. Provide a clear, step-by-step answer based only on the official US immigration policies. Do not make up information. If unsure, say you don't know.
+
+Always include relevant source links at the end of your response using official government sources such as:
+- USCIS.gov (https://www.uscis.gov)
+- State Department (https://travel.state.gov)
+- Department of Labor (https://www.dol.gov)
+- IRS (https://www.irs.gov) for tax-related immigration matters
+
+Context from user posts and replies (use this to understand common user experiences but rely on official policies for advice):
+${context}`
           },
           {
             role: 'user',
             content: question
           }
         ],
-        temperature: 0.7,
-        max_tokens: 500
+        temperature: 0.3,
+        max_tokens: 800
       })
     })
 
