@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -71,7 +70,18 @@ const PostFeed = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setPosts(data || []);
+      
+      // Ensure the data matches our Post interface by providing defaults for new fields
+      const postsWithDefaults = (data || []).map(post => ({
+        ...post,
+        tags: post.tags || null,
+        visa_type: post.visa_type || null,
+        target_country: post.target_country || null,
+        likes: post.likes || 0,
+        comments: post.comments || 0
+      }));
+      
+      setPosts(postsWithDefaults);
     } catch (error) {
       console.error('Error fetching posts:', error);
       toast({
