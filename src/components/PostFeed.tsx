@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MessageSquarePlus, Heart, MessageSquare, Share, Users, Globe, Filter, Plus, X, Sparkles } from 'lucide-react';
+import { MessageSquarePlus, Heart, MessageSquare, Share, Users, Globe, Plus, X, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroqClassification } from '@/hooks/useGroqClassification';
@@ -25,7 +24,15 @@ interface Post {
   comments: number;
   classification: string | null;
   classification_confidence: number | null;
+  tags: string[] | null;
+  visa_type: string | null;
+  target_country: string | null;
   created_at: string;
+  post_replies?: Array<{
+    id: string;
+    content: string;
+    created_at: string;
+  }>;
 }
 
 const PostFeed = () => {
@@ -33,10 +40,8 @@ const PostFeed = () => {
   const { classifyPost, isClassifying } = useGroqClassification();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
-  const [countryFilter, setCountryFilter] = useState('All Countries');
-  const [typeFilter, setTypeFilter] = useState('All Types');
-  const [stageFilter, setStageFilter] = useState('All Stages');
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
 
   const [newPost, setNewPost] = useState({
     title: '',
@@ -55,7 +60,14 @@ const PostFeed = () => {
     try {
       const { data, error } = await supabase
         .from('posts')
-        .select('*')
+        .select(`
+          *,
+          post_replies (
+            id,
+            content,
+            created_at
+          )
+        `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -70,6 +82,18 @@ const PostFeed = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleComments = (postId: string) => {
+    setExpandedComments(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(postId)) {
+        newSet.delete(postId);
+      } else {
+        newSet.add(postId);
+      }
+      return newSet;
+    });
   };
 
   const getStatusColor = (status: string | null) => {
@@ -313,15 +337,36 @@ const PostFeed = () => {
                 {post.content}
               </p>
               
+              {/* Tags */}
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map((tag, index) => (
+                    <Badge key={index} className="bg-blue-100 text-blue-800 text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center space-x-6">
                   <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-400 hover:bg-red-400/10">
                     <Heart className="w-4 h-4 mr-2" />
                     {post.likes || 0}
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-blue-400 hover:bg-blue-400/10">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-gray-400 hover:text-blue-400 hover:bg-blue-400/10"
+                    onClick={() => toggleComments(post.id)}
+                  >
                     <MessageSquare className="w-4 h-4 mr-2" />
-                    {post.comments || 0}
+                    {post.post_replies?.length || 0}
+                    {expandedComments.has(post.id) ? (
+                      <ChevronUp className="w-4 h-4 ml-1" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 ml-1" />
+                    )}
                   </Button>
                   <Button variant="ghost" size="sm" className="text-gray-400 hover:text-green-400 hover:bg-green-400/10">
                     <Share className="w-4 h-4 mr-2" />
@@ -341,6 +386,22 @@ const PostFeed = () => {
                   </Button>
                 )}
               </div>
+
+              {/* Comments Section */}
+              {expandedComments.has(post.id) && post.post_replies && post.post_replies.length > 0 && (
+                <div className="mt-4 pl-4 border-l-2 border-gray-700 space-y-3">
+                  {post.post_replies.map((reply) => (
+                    <div key={reply.id} className="bg-gray-700/30 rounded-lg p-3">
+                      <div className="text-gray-300 text-sm">
+                        {reply.content}
+                      </div>
+                      <div className="text-gray-500 text-xs mt-1">
+                        {new Date(reply.created_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </Card>
         ))}

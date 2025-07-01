@@ -5,6 +5,7 @@ import { Home, MessageSquare, Bot, Newspaper, LogIn } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthDialog } from './AuthDialog';
 import { UserMenu } from './UserMenu';
+import AdminPanel from './AdminPanel';
 
 interface NavigationProps {
   activeSection: string;
@@ -86,6 +87,13 @@ const Navigation = ({
                 </Button>
               );
             })}
+            
+            {/* Admin Panel - only show if user is logged in */}
+            {user && (
+              <div className="ml-2">
+                <AdminPanel />
+              </div>
+            )}
             
             <div className="ml-4 pl-4 border-l border-gray-800">
               {loading ? (
