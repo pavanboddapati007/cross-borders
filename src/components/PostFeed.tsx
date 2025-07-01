@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -72,7 +73,7 @@ const PostFeed = () => {
       if (error) throw error;
       
       // Ensure the data matches our Post interface by providing defaults for new fields
-      const postsWithDefaults = (data || []).map(post => ({
+      const postsWithDefaults = (data || []).map((post: any) => ({
         ...post,
         tags: post.tags || null,
         visa_type: post.visa_type || null,
