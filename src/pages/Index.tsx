@@ -5,6 +5,7 @@ import PostFeed from '../components/PostFeed';
 import AIAssistant from '../components/AIAssistant';
 import NewsSection from '../components/NewsSection';
 import Hero from '../components/Hero';
+import { AdminPanel } from '../components/AdminPanel';
 import { AuthProvider } from '../contexts/AuthContext';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -19,6 +20,8 @@ const Index = () => {
         return <AIAssistant />;
       case 'news':
         return <NewsSection />;
+      case 'admin':
+        return <AdminPanel />;
       default:
         return <Hero onNavigate={setActiveSection} />;
     }
