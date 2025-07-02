@@ -131,8 +131,8 @@ const Hero = ({
           </div>
           
           <h1 className="text-6xl md:text-7xl font-bold leading-tight mb-6">
-            <span className="block text-white">One journey,</span>
-            <span className="block bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">Endless chapters.</span>
+            <span className="block text-white">Your immigration story</span>
+            <span className="block bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">doesn't stop.</span>
           </h1>
           
           <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-8">
