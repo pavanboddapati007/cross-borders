@@ -4,11 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquarePlus, Heart, MessageSquare, Share, Users, Globe, Plus, X, Sparkles, ChevronDown, ChevronUp, Send } from 'lucide-react';
+import { MessageSquarePlus, Heart, MessageSquare, Share, Users, Globe, Plus, X, Sparkles, ChevronDown, ChevronUp, Send, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroqClassification } from '@/hooks/useGroqClassification';
 import { toast } from '@/hooks/use-toast';
+
+interface PostReply {
+  id: string;
+  content: string;
+  created_at: string;
+  user_id: string;
+  profiles?: {
+    username: string | null;
+    full_name: string | null;
+  };
+}
 
 interface Post {
   id: string;
@@ -27,11 +38,7 @@ interface Post {
   visa_type: string | null;
   target_country: string | null;
   created_at: string;
-  post_replies?: Array<{
-    id: string;
-    content: string;
-    created_at: string;
-  }>;
+  post_replies?: PostReply[];
 }
 
 const PostFeed = () => {
@@ -66,7 +73,12 @@ const PostFeed = () => {
           post_replies (
             id,
             content,
-            created_at
+            created_at,
+            user_id,
+            profiles (
+              username,
+              full_name
+            )
           )
         `)
         .order('created_at', { ascending: false });
@@ -93,6 +105,53 @@ const PostFeed = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string, postId: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to delete comments",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('post_replies')
+        .delete()
+        .eq('id', commentId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Update comments count
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        const { error: updateError } = await supabase
+          .from('posts')
+          .update({ comments: Math.max(0, (post.comments || 0) - 1) })
+          .eq('id', postId);
+
+        if (updateError) throw updateError;
+      }
+
+      toast({
+        title: "Comment deleted",
+        description: "Your comment has been removed successfully",
+      });
+
+      // Refresh posts to show updated comments
+      fetchPosts();
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete comment",
+        variant: "destructive"
+      });
     }
   };
 
@@ -355,23 +414,6 @@ const PostFeed = () => {
     }
   };
 
-  const handleClassifyPost = async (post: Post) => {
-    try {
-      await classifyPost(post.id, post.title, post.content, post.country || '', post.category || '');
-      toast({
-        title: "Success",
-        description: "Post classified successfully!",
-      });
-      fetchPosts(); // Refresh to show classification
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to classify post",
-        variant: "destructive"
-      });
-    }
-  };
-
   if (loading) {
     return <div className="text-white text-center py-8">Loading posts...</div>;
   }
@@ -549,18 +591,6 @@ const PostFeed = () => {
                     Share
                   </Button>
                 </div>
-                
-                {!post.classification && user && (
-                  <Button 
-                    onClick={() => handleClassifyPost(post)}
-                    disabled={isClassifying}
-                    size="sm"
-                    className="bg-purple-600 hover:bg-purple-700 text-white"
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    {isClassifying ? 'Classifying...' : 'Classify'}
-                  </Button>
-                )}
               </div>
 
               {/* Comments Section */}
@@ -590,11 +620,31 @@ const PostFeed = () => {
                   {post.post_replies && post.post_replies.length > 0 ? (
                     post.post_replies.map((reply) => (
                       <div key={reply.id} className="bg-gray-700/30 rounded-lg p-3">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                              {reply.profiles?.username?.charAt(0)?.toUpperCase() || reply.profiles?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                            </div>
+                            <span className="text-gray-400 text-sm font-medium">
+                              {reply.profiles?.username || reply.profiles?.full_name || 'Anonymous User'}
+                            </span>
+                            <span className="text-gray-500 text-xs">
+                              {new Date(reply.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                          {user && reply.user_id === user.id && (
+                            <Button
+                              onClick={() => handleDeleteComment(reply.id, post.id)}
+                              size="sm"
+                              variant="ghost"
+                              className="text-gray-400 hover:text-red-400 hover:bg-red-400/10 p-1 h-auto"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          )}
+                        </div>
                         <div className="text-gray-300 text-sm">
                           {reply.content}
-                        </div>
-                        <div className="text-gray-500 text-xs mt-1">
-                          {new Date(reply.created_at).toLocaleDateString()}
                         </div>
                       </div>
                     ))
