@@ -20,25 +20,38 @@ const PostFeed = () => {
     queryKey: ['posts'],
     queryFn: async () => {
       console.log('Fetching posts...');
-      const { data, error } = await supabase
+      
+      // Fetch posts
+      const { data: postsData, error: postsError } = await supabase
         .from('posts')
-        .select(`
-          *,
-          profiles!posts_user_id_fkey (
-            username,
-            full_name,
-            avatar_url
-          )
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching posts:', error);
-        throw error;
+      if (postsError) {
+        console.error('Error fetching posts:', postsError);
+        throw postsError;
       }
 
-      console.log('Posts fetched:', data);
-      return data;
+      // Fetch profiles for the posts
+      const userIds = postsData?.map(post => post.user_id).filter(Boolean) || [];
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, username, full_name, avatar_url')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        throw profilesError;
+      }
+
+      // Merge posts with profiles
+      const postsWithProfiles = postsData?.map(post => ({
+        ...post,
+        profiles: profilesData?.find(profile => profile.id === post.user_id) || null
+      }));
+
+      console.log('Posts fetched:', postsWithProfiles);
+      return postsWithProfiles;
     },
   });
 
@@ -47,25 +60,38 @@ const PostFeed = () => {
     queryKey: ['post_replies'],
     queryFn: async () => {
       console.log('Fetching replies...');
-      const { data, error } = await supabase
+      
+      // Fetch replies
+      const { data: repliesData, error: repliesError } = await supabase
         .from('post_replies')
-        .select(`
-          *,
-          profiles!post_replies_user_id_fkey (
-            username,
-            full_name,
-            avatar_url
-          )
-        `)
+        .select('*')
         .order('created_at', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching replies:', error);
-        throw error;
+      if (repliesError) {
+        console.error('Error fetching replies:', repliesError);
+        throw repliesError;
       }
 
-      console.log('Replies fetched:', data);
-      return data;
+      // Fetch profiles for the replies
+      const userIds = repliesData?.map(reply => reply.user_id).filter(Boolean) || [];
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, username, full_name, avatar_url')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        throw profilesError;
+      }
+
+      // Merge replies with profiles
+      const repliesWithProfiles = repliesData?.map(reply => ({
+        ...reply,
+        profiles: profilesData?.find(profile => profile.id === reply.user_id) || null
+      }));
+
+      console.log('Replies fetched:', repliesWithProfiles);
+      return repliesWithProfiles;
     },
   });
 
