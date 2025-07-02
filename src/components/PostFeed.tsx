@@ -216,16 +216,23 @@ const PostFeed = () => {
 
   const handleShare = async (post: Post) => {
     try {
+      const shareTitle = `Immigration Story: ${post.title}`;
+      const shareText = `${post.content}\n\n${post.country ? `Country: ${post.country}` : ''}${post.category ? ` | Category: ${post.category}` : ''}`;
+      
       if (navigator.share) {
         await navigator.share({
-          title: post.title,
-          text: `Check out this immigration story: ${post.title}`,
+          title: shareTitle,
+          text: shareText,
           url: window.location.href
+        });
+        toast({
+          title: "Post shared!",
+          description: "The post has been shared successfully",
         });
       } else {
         // Fallback - copy to clipboard
-        const shareText = `Check out this immigration story: "${post.title}" - ${post.content.substring(0, 100)}...`;
-        await navigator.clipboard.writeText(shareText);
+        const fullShareText = `${shareTitle}\n\n${shareText}`;
+        await navigator.clipboard.writeText(fullShareText);
         toast({
           title: "Copied to clipboard!",
           description: "Post content has been copied to your clipboard",

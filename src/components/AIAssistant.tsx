@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Bot, User, Send, Sparkles } from 'lucide-react';
+import { Bot, User, Send, Sparkles, ArrowUp } from 'lucide-react';
 import { useGroqAssistant } from '@/hooks/useGroqAssistant';
 import { toast } from '@/hooks/use-toast';
 
@@ -86,35 +86,88 @@ const AIAssistant = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="text-center space-y-4 mb-8">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-          AI Immigration Assistant
-        </h2>
-        <p className="text-gray-600">Get instant guidance powered by real community experiences and official immigration guidelines</p>
-        <div className="flex gap-2 justify-center">
-          <Badge className="bg-green-100 text-green-800 border-green-200">
-            <Sparkles className="w-3 h-3 mr-1" />
-            Powered by Groq AI
-          </Badge>
-          <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-            ✓ Real User Experiences
-          </Badge>
+    <div className="flex flex-col h-[80vh] max-w-4xl mx-auto bg-gray-900 rounded-lg overflow-hidden">
+      {/* Header */}
+      <div className="bg-gray-800 border-b border-gray-700 p-6">
+        <div className="text-center space-y-3">
+          <h2 className="text-2xl font-bold text-white">
+            Immigration Assistant
+          </h2>
+          <div className="flex gap-2 justify-center">
+            <Badge className="bg-emerald-900/50 text-emerald-300 border-emerald-700">
+              <Sparkles className="w-3 h-3 mr-1" />
+              Powered by Groq AI
+            </Badge>
+            <Badge className="bg-blue-900/50 text-blue-300 border-blue-700">
+              ✓ Real User Experiences
+            </Badge>
+          </div>
+        </div>
+        
+        {/* Disclaimer moved to top */}
+        <div className="mt-4 p-3 bg-amber-900/20 border border-amber-700/30 rounded-lg">
+          <p className="text-sm text-amber-200">
+            <strong>Disclaimer:</strong> This AI assistant provides general information based on community experiences and should not be considered legal advice. 
+            Immigration law is complex and individual cases vary. Always consult with a qualified immigration attorney for personalized guidance.
+          </p>
         </div>
       </div>
 
-      {/* Quick Questions */}
-      <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-0">
-        <CardHeader>
-          <h3 className="font-semibold text-gray-800">Quick Questions</h3>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-950">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex space-x-3 ${message.isUser ? 'flex-row-reverse space-x-reverse' : ''}`}
+          >
+            <Avatar className="w-8 h-8 flex-shrink-0">
+              <AvatarFallback className={message.isUser ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white'}>
+                {message.isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className={`flex-1 max-w-xs md:max-w-md lg:max-w-2xl ${message.isUser ? 'text-right' : ''}`}>
+              <div
+                className={`p-4 rounded-xl ${
+                  message.isUser
+                    ? 'bg-blue-600 text-white ml-auto'
+                    : 'bg-gray-800 text-gray-100 border border-gray-700'
+                }`}
+              >
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">{message.timestamp}</p>
+            </div>
+          </div>
+        ))}
+        
+        {isLoading && (
+          <div className="flex space-x-3">
+            <Avatar className="w-8 h-8">
+              <AvatarFallback className="bg-emerald-600 text-white">
+                <Bot className="w-4 h-4" />
+              </AvatarFallback>
+            </Avatar>
+            <div className="bg-gray-800 border border-gray-700 p-4 rounded-xl">
+              <div className="flex space-x-1">
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Quick Questions moved down */}
+      {messages.length <= 1 && (
+        <div className="p-4 bg-gray-900 border-t border-gray-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
             {commonQuestions.map((question, index) => (
               <Button
                 key={index}
                 variant="outline"
-                className="text-left h-auto p-3 hover:bg-white hover:shadow-md transition-all duration-200"
+                className="text-left h-auto p-3 text-gray-300 border-gray-600 hover:bg-gray-800 hover:border-gray-500 transition-all duration-200"
                 onClick={() => handleQuickQuestion(question)}
                 disabled={isLoading}
               >
@@ -122,90 +175,31 @@ const AIAssistant = () => {
               </Button>
             ))}
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Chat Interface */}
-      <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-lg">
-        <CardContent className="p-0">
-          {/* Messages */}
-          <div className="h-96 overflow-y-auto p-6 space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex space-x-3 ${message.isUser ? 'flex-row-reverse space-x-reverse' : ''}`}
-              >
-                <Avatar className="w-8 h-8 flex-shrink-0">
-                  <AvatarFallback className={message.isUser ? 'bg-blue-600 text-white' : 'bg-green-600 text-white'}>
-                    {message.isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div className={`flex-1 max-w-xs md:max-w-md lg:max-w-lg ${message.isUser ? 'text-right' : ''}`}>
-                  <div
-                    className={`p-3 rounded-lg ${
-                      message.isUser
-                        ? 'bg-blue-600 text-white ml-auto'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}
-                  >
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">{message.timestamp}</p>
-                </div>
-              </div>
-            ))}
-            
-            {isLoading && (
-              <div className="flex space-x-3">
-                <Avatar className="w-8 h-8">
-                  <AvatarFallback className="bg-green-600 text-white">
-                    <Bot className="w-4 h-4" />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="bg-gray-100 p-3 rounded-lg">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  </div>
-                </div>
-              </div>
-            )}
+        </div>
+      )}
+      
+      {/* Input Area */}
+      <div className="p-4 bg-gray-900 border-t border-gray-700">
+        <div className="flex space-x-2 items-end">
+          <div className="flex-1 relative">
+            <Input
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              placeholder="Ask about immigration processes, requirements, or timelines..."
+              className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 pr-12 py-3 rounded-xl focus:border-blue-500"
+              onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
+              disabled={isLoading}
+            />
           </div>
-          
-          {/* Input */}
-          <div className="border-t p-4">
-            <div className="flex space-x-2">
-              <Input
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Ask about immigration processes, requirements, or timelines..."
-                className="flex-1 border-gray-200 focus:border-blue-500"
-                onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
-                disabled={isLoading}
-              />
-              <Button
-                onClick={handleSendMessage}
-                className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white"
-                disabled={!inputMessage.trim() || isLoading}
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Disclaimer */}
-      <Card className="bg-amber-50 border-amber-200">
-        <CardContent className="p-4">
-          <p className="text-sm text-amber-800">
-            <strong>Disclaimer:</strong> This AI assistant provides general information based on community experiences and should not be considered legal advice. 
-            Immigration law is complex and individual cases vary. Always consult with a qualified immigration attorney for personalized guidance.
-          </p>
-        </CardContent>
-      </Card>
+          <Button
+            onClick={handleSendMessage}
+            className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl"
+            disabled={!inputMessage.trim() || isLoading}
+          >
+            <ArrowUp className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
