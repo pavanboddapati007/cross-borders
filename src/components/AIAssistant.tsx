@@ -104,7 +104,7 @@ const AIAssistant = () => {
           </div>
         </div>
         
-        {/* Disclaimer moved to top */}
+        {/* Disclaimer at top */}
         <div className="mt-4 p-3 bg-amber-900/20 border border-amber-700/30 rounded-lg">
           <p className="text-sm text-amber-200">
             <strong>Disclaimer:</strong> This AI assistant provides general information based on community experiences and should not be considered legal advice. 
@@ -114,7 +114,7 @@ const AIAssistant = () => {
       </div>
 
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-950">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-950 min-h-0">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -159,15 +159,15 @@ const AIAssistant = () => {
         )}
       </div>
 
-      {/* Quick Questions moved down */}
+      {/* Quick Questions at bottom - only show when no conversation has started */}
       {messages.length <= 1 && (
-        <div className="p-4 bg-gray-900 border-t border-gray-700">
+        <div className="p-4 bg-gray-800 border-t border-gray-700">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
             {commonQuestions.map((question, index) => (
               <Button
                 key={index}
                 variant="outline"
-                className="text-left h-auto p-3 text-gray-300 border-gray-600 hover:bg-gray-800 hover:border-gray-500 transition-all duration-200"
+                className="text-left h-auto p-3 text-white bg-gray-700 border-gray-600 hover:bg-gray-600 hover:border-gray-500 transition-all duration-200"
                 onClick={() => handleQuickQuestion(question)}
                 disabled={isLoading}
               >
