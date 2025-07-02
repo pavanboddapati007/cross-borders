@@ -199,53 +199,65 @@ const PostFeed = () => {
       {posts?.map((post) => (
         <Card key={post.id} className="w-full">
           <CardHeader className="pb-3">
-            <div className="flex items-center space-x-3">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={post.profiles?.avatar_url || ''} />
-                <AvatarFallback>
-                  {post.profiles?.username?.[0]?.toUpperCase() || 
-                   post.profiles?.full_name?.[0]?.toUpperCase() || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-semibold">
-                  {post.profiles?.full_name || post.profiles?.username || 'Anonymous'}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {new Date(post.created_at).toLocaleDateString()}
-                </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-muted text-sm">
+                    {post.profiles?.username?.[0]?.toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium text-sm">
+                    {post.profiles?.username || 'Anonymous'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(post.created_at).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
+              {post.status && (
+                <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">
+                  {post.status}
+                </span>
+              )}
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <h3 className="font-semibold text-lg mb-2">{post.title}</h3>
-              <p className="text-gray-700 whitespace-pre-wrap">{post.content}</p>
+              <p className="text-foreground whitespace-pre-wrap leading-relaxed">{post.content}</p>
             </div>
 
-            {/* Post metadata */}
-            <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-              {post.country && (
-                <span className="bg-blue-100 px-2 py-1 rounded">
-                  Country: {post.country}
-                </span>
-              )}
-              {post.target_country && (
-                <span className="bg-green-100 px-2 py-1 rounded">
-                  Target: {post.target_country}
-                </span>
-              )}
-              {post.visa_type && (
-                <span className="bg-purple-100 px-2 py-1 rounded">
-                  Visa: {post.visa_type}
-                </span>
-              )}
-              {post.stage && (
-                <span className="bg-orange-100 px-2 py-1 rounded">
-                  Stage: {post.stage}
-                </span>
-              )}
-            </div>
+            {/* Post tags */}
+            {(post.category || post.visa_type || post.stage || post.country || post.target_country) && (
+              <div className="flex flex-wrap gap-2">
+                {post.category && (
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">
+                    {post.category}
+                  </span>
+                )}
+                {post.visa_type && (
+                  <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-medium">
+                    {post.visa_type}
+                  </span>
+                )}
+                {post.stage && (
+                  <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-xs font-medium">
+                    {post.stage}
+                  </span>
+                )}
+                {post.country && (
+                  <span className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-medium">
+                    From: {post.country}
+                  </span>
+                )}
+                {post.target_country && (
+                  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
+                    To: {post.target_country}
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* Action buttons */}
             <div className="flex items-center space-x-4 pt-2 border-t">
@@ -306,18 +318,16 @@ const PostFeed = () => {
               <div className="space-y-3 pt-3 border-t">
                 <h4 className="font-medium text-sm">Replies:</h4>
                 {getPostReplies(post.id).map((reply) => (
-                  <div key={reply.id} className="bg-gray-50 p-3 rounded-lg">
+                  <div className="bg-muted/50 p-3 rounded-lg">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-2 mb-2">
                         <Avatar className="h-6 w-6">
-                          <AvatarImage src={reply.profiles?.avatar_url || ''} />
-                          <AvatarFallback className="text-xs">
-                            {reply.profiles?.username?.[0]?.toUpperCase() || 
-                             reply.profiles?.full_name?.[0]?.toUpperCase() || 'U'}
+                          <AvatarFallback className="text-xs bg-muted">
+                            {reply.profiles?.username?.[0]?.toUpperCase() || 'U'}
                           </AvatarFallback>
                         </Avatar>
                         <span className="font-medium text-sm">
-                          {reply.profiles?.full_name || reply.profiles?.username || 'Anonymous'}
+                          {reply.profiles?.username || 'Anonymous'}
                         </span>
                         <span className="text-xs text-muted-foreground">
                           {new Date(reply.created_at).toLocaleDateString()}
@@ -328,13 +338,13 @@ const PostFeed = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDeleteReply(reply.id)}
-                          className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                          className="h-6 w-6 p-0 text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       )}
                     </div>
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                    <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                       {reply.content}
                     </p>
                   </div>
