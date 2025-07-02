@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Trash2 } from 'lucide-react';
+import { Heart, MessageCircle, Trash2, Share } from 'lucide-react';
 import { toast } from 'sonner';
 
 const PostFeed = () => {
@@ -195,28 +195,40 @@ const PostFeed = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {posts?.map((post) => (
-        <Card key={post.id} className="w-full">
+    <div className="bg-slate-900 min-h-screen p-6">
+      {/* Share Post Button */}
+      <div className="mb-6 flex justify-center">
+        <Button 
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-medium"
+          onClick={() => {
+            // You can implement post creation logic here
+            toast.success('Post sharing feature coming soon!');
+          }}
+        >
+          <Share className="h-4 w-4 mr-2" />
+          Share Your Story
+        </Button>
+      </div>
+
+      <div className="space-y-6 max-w-4xl mx-auto">
+        {posts?.map((post) => (
+        <Card key={post.id} className="w-full bg-slate-800 border-slate-700 text-white">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-muted text-sm">
+                  <AvatarFallback className="bg-slate-700 text-white text-sm">
                     {post.profiles?.username?.[0]?.toUpperCase() || 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium text-sm">
+                  <p className="font-medium text-sm text-white">
                     {post.profiles?.username || 'Anonymous'}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(post.created_at).toLocaleDateString()}
                   </p>
                 </div>
               </div>
               {post.status && (
-                <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">
+                <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-medium">
                   {post.status}
                 </span>
               )}
@@ -224,35 +236,35 @@ const PostFeed = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <h3 className="font-semibold text-lg mb-2">{post.title}</h3>
-              <p className="text-foreground whitespace-pre-wrap leading-relaxed">{post.content}</p>
+              <h3 className="font-semibold text-lg mb-2 text-white">{post.title}</h3>
+              <p className="text-gray-300 whitespace-pre-wrap leading-relaxed">{post.content}</p>
             </div>
 
             {/* Post tags */}
             {(post.category || post.visa_type || post.stage || post.country || post.target_country) && (
               <div className="flex flex-wrap gap-2">
                 {post.category && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">
+                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
                     {post.category}
                   </span>
                 )}
                 {post.visa_type && (
-                  <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-medium">
+                  <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-medium">
                     {post.visa_type}
                   </span>
                 )}
                 {post.stage && (
-                  <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-xs font-medium">
+                  <span className="bg-orange-600 text-white px-3 py-1 rounded-full text-xs font-medium">
                     {post.stage}
                   </span>
                 )}
                 {post.country && (
-                  <span className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-medium">
+                  <span className="bg-slate-600 text-white px-3 py-1 rounded-full text-xs font-medium">
                     From: {post.country}
                   </span>
                 )}
                 {post.target_country && (
-                  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
+                  <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-medium">
                     To: {post.target_country}
                   </span>
                 )}
@@ -260,12 +272,12 @@ const PostFeed = () => {
             )}
 
             {/* Action buttons */}
-            <div className="flex items-center space-x-4 pt-2 border-t">
+            <div className="flex items-center space-x-4 pt-2 border-t border-slate-700">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => handleLike(post.id)}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 text-gray-300 hover:text-white hover:bg-slate-700"
               >
                 <Heart className="h-4 w-4" />
                 <span>{post.likes || 0}</span>
@@ -275,7 +287,7 @@ const PostFeed = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => setReplyingTo(replyingTo === post.id ? null : post.id)}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 text-gray-300 hover:text-white hover:bg-slate-700"
               >
                 <MessageCircle className="h-4 w-4" />
                 <span>{post.comments || 0}</span>
@@ -284,12 +296,12 @@ const PostFeed = () => {
 
             {/* Reply form */}
             {replyingTo === post.id && user && (
-              <div className="space-y-2 pt-2 border-t">
+              <div className="space-y-2 pt-2 border-t border-slate-700">
                 <Textarea
                   placeholder="Write a reply..."
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
-                  className="min-h-[100px]"
+                  className="min-h-[100px] bg-slate-700 border-slate-600 text-white placeholder:text-gray-400"
                 />
                 <div className="flex space-x-2">
                   <Button
@@ -315,22 +327,19 @@ const PostFeed = () => {
 
             {/* Display replies */}
             {getPostReplies(post.id).length > 0 && (
-              <div className="space-y-3 pt-3 border-t">
-                <h4 className="font-medium text-sm">Replies:</h4>
+              <div className="space-y-3 pt-3 border-t border-slate-700">
+                <h4 className="font-medium text-sm text-white">Replies:</h4>
                 {getPostReplies(post.id).map((reply) => (
-                  <div className="bg-muted/50 p-3 rounded-lg">
+                  <div className="bg-slate-700/50 p-3 rounded-lg">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-2 mb-2">
                         <Avatar className="h-6 w-6">
-                          <AvatarFallback className="text-xs bg-muted">
+                          <AvatarFallback className="text-xs bg-slate-600 text-white">
                             {reply.profiles?.username?.[0]?.toUpperCase() || 'U'}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="font-medium text-sm">
+                        <span className="font-medium text-sm text-white">
                           {reply.profiles?.username || 'Anonymous'}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(reply.created_at).toLocaleDateString()}
                         </span>
                       </div>
                       {user && reply.user_id === user.id && (
@@ -338,13 +347,13 @@ const PostFeed = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDeleteReply(reply.id)}
-                          className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                          className="h-6 w-6 p-0 text-red-400 hover:text-red-300 hover:bg-slate-600"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       )}
                     </div>
-                    <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                    <p className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">
                       {reply.content}
                     </p>
                   </div>
@@ -353,7 +362,8 @@ const PostFeed = () => {
             )}
           </CardContent>
         </Card>
-      ))}
+          ))}
+      </div>
     </div>
   );
 };
