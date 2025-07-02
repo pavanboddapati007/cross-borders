@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Bot, User, Send, Sparkles, ArrowUp } from 'lucide-react';
+import { Bot, User, Send, Sparkles, ArrowUp, Search } from 'lucide-react';
 import { useGroqAssistant } from '@/hooks/useGroqAssistant';
 import { toast } from '@/hooks/use-toast';
 
@@ -28,6 +28,7 @@ const AIAssistant = () => {
   ]);
   
   const [inputMessage, setInputMessage] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const commonQuestions = [
     'How long does a green card application take?',
@@ -37,22 +38,25 @@ const AIAssistant = () => {
     'What are the requirements for citizenship?'
   ];
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+  const handleSendMessage = async (messageToSend?: string) => {
+    const questionText = messageToSend || inputMessage;
+    if (!questionText.trim()) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: inputMessage,
+      content: questionText,
       isUser: true,
       timestamp: new Date().toLocaleTimeString()
     };
 
     setMessages(prev => [...prev, userMessage]);
-    const currentQuestion = inputMessage;
     setInputMessage('');
+    setSearchQuery('');
 
     try {
-      const response = await askQuestion(currentQuestion);
+      console.log('Sending question to AI:', questionText);
+      const response = await askQuestion(questionText);
+      console.log('Received AI response:', response);
       
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -66,7 +70,7 @@ const AIAssistant = () => {
       console.error('AI Assistant error:', error);
       toast({
         title: "Error",
-        description: "Failed to get response from AI assistant",
+        description: "Failed to get response from AI assistant. Please try again.",
         variant: "destructive"
       });
       
@@ -81,8 +85,14 @@ const AIAssistant = () => {
     }
   };
 
+  const handleSearchSubmit = () => {
+    if (searchQuery.trim()) {
+      handleSendMessage(searchQuery);
+    }
+  };
+
   const handleQuickQuestion = (question: string) => {
-    setInputMessage(question);
+    handleSendMessage(question);
   };
 
   return (
@@ -104,7 +114,31 @@ const AIAssistant = () => {
           </div>
         </div>
         
-        {/* Disclaimer at top */}
+        {/* Search Bar */}
+        <div className="mt-4 relative">
+          <div className="flex space-x-2">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search immigration topics or ask a question..."
+                className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-10 py-3 rounded-xl focus:border-blue-500"
+                onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSearchSubmit()}
+                disabled={isLoading}
+              />
+            </div>
+            <Button
+              onClick={handleSearchSubmit}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl"
+              disabled={!searchQuery.trim() || isLoading}
+            >
+              <Search className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+        
+        {/* Disclaimer */}
         <div className="mt-4 p-3 bg-amber-900/20 border border-amber-700/30 rounded-lg">
           <p className="text-sm text-amber-200">
             <strong>Disclaimer:</strong> This AI assistant provides general information based on community experiences and should not be considered legal advice. 
@@ -158,11 +192,35 @@ const AIAssistant = () => {
           </div>
         )}
       </div>
+      
+      {/* Input Area */}
+      <div className="p-4 bg-gray-900 border-t border-gray-700">
+        <div className="flex space-x-2 items-end">
+          <div className="flex-1 relative">
+            <Input
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              placeholder="Type your immigration question here..."
+              className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 pr-12 py-3 rounded-xl focus:border-blue-500"
+              onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
+              disabled={isLoading}
+            />
+          </div>
+          <Button
+            onClick={() => handleSendMessage()}
+            className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl"
+            disabled={!inputMessage.trim() || isLoading}
+          >
+            <ArrowUp className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
 
-      {/* Quick Questions at bottom - only show when no conversation has started */}
+      {/* Common Questions at bottom - only show when no conversation has started */}
       {messages.length <= 1 && (
         <div className="p-4 bg-gray-800 border-t border-gray-700">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+          <h3 className="text-sm font-medium text-gray-300 mb-3">Common Questions:</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {commonQuestions.map((question, index) => (
               <Button
                 key={index}
@@ -177,29 +235,6 @@ const AIAssistant = () => {
           </div>
         </div>
       )}
-      
-      {/* Input Area */}
-      <div className="p-4 bg-gray-900 border-t border-gray-700">
-        <div className="flex space-x-2 items-end">
-          <div className="flex-1 relative">
-            <Input
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Ask about immigration processes, requirements, or timelines..."
-              className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 pr-12 py-3 rounded-xl focus:border-blue-500"
-              onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
-              disabled={isLoading}
-            />
-          </div>
-          <Button
-            onClick={handleSendMessage}
-            className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl"
-            disabled={!inputMessage.trim() || isLoading}
-          >
-            <ArrowUp className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
     </div>
   );
 };
