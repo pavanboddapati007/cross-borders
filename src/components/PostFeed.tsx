@@ -25,7 +25,7 @@ const PostFeed = () => {
         .from('posts')
         .select(`
           *,
-          profiles:user_id (
+          profiles!posts_user_id_fkey (
             username,
             full_name,
             avatar_url
@@ -52,7 +52,7 @@ const PostFeed = () => {
         .from('post_replies')
         .select(`
           *,
-          profiles:user_id (
+          profiles!post_replies_user_id_fkey (
             username,
             full_name,
             avatar_url
