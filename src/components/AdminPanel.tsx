@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { PlusCircle, X, UserPlus, MessageSquarePlus, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -196,183 +197,168 @@ const AdminPanel = () => {
     }
   };
 
-  if (!isOpen) {
-    return (
-      <Button
-        onClick={() => setIsOpen(true)}
-        size="sm"
-        className="bg-purple-600 hover:bg-purple-700 text-white"
-      >
-        <UserPlus size={16} className="mr-1.5" />
-        Admin
-      </Button>
-    );
-  }
-
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-start justify-center p-4 pt-8 overflow-y-auto">
-      <div className="w-full max-w-4xl min-h-fit">
-        <Card className="bg-gray-900 border-gray-700 w-full">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-white flex items-center gap-2">
-              <UserPlus className="w-6 h-6 text-purple-400" />
-              Admin Panel - Add User Story
-            </CardTitle>
-            <Button
-              onClick={() => setIsOpen(false)}
-              variant="ghost"
-              size="sm"
-              className="text-gray-400 hover:text-white"
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          </CardHeader>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button
+          size="sm"
+          className="bg-purple-600 hover:bg-purple-700 text-white"
+        >
+          <UserPlus size={16} className="mr-1.5" />
+          Admin
+        </Button>
+      </DialogTrigger>
+      
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gray-900 border-gray-700 text-white">
+        <div className="space-y-6">
+          <div className="flex items-center gap-2">
+            <UserPlus className="w-6 h-6 text-purple-400" />
+            <h2 className="text-xl font-semibold">Admin Panel - Add User Story</h2>
+          </div>
           
-          <CardContent className="space-y-6">
-            {/* Story Details */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Input
-                  placeholder="Random Username"
-                  value={storyData.username}
-                  onChange={(e) => setStoryData(prev => ({ ...prev, username: e.target.value }))}
-                  className="bg-gray-800 border-gray-600 text-white flex-1"
-                />
-                <Button
-                  onClick={generateNewUsername}
-                  variant="outline"
-                  size="sm"
-                  className="border-gray-600 text-gray-300 hover:text-white"
-                >
-                  Generate
-                </Button>
-              </div>
-              
+          {/* Story Details */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-4">
               <Input
-                placeholder="Story Title *"
-                value={storyData.title}
-                onChange={(e) => setStoryData(prev => ({ ...prev, title: e.target.value }))}
-                className="bg-gray-800 border-gray-600 text-white"
+                placeholder="Random Username"
+                value={storyData.username}
+                onChange={(e) => setStoryData(prev => ({ ...prev, username: e.target.value }))}
+                className="bg-gray-800 border-gray-600 text-white flex-1"
               />
-              
-              <Textarea
-                placeholder="User's immigration story content *"
-                value={storyData.content}
-                onChange={(e) => setStoryData(prev => ({ ...prev, content: e.target.value }))}
-                className="min-h-[120px] bg-gray-800 border-gray-600 text-white"
-              />
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Input
-                  placeholder="Country"
-                  value={storyData.country}
-                  onChange={(e) => setStoryData(prev => ({ ...prev, country: e.target.value }))}
-                  className="bg-gray-800 border-gray-600 text-white"
-                />
-                <Input
-                  placeholder="Category/Visa Type"
-                  value={storyData.category}
-                  onChange={(e) => setStoryData(prev => ({ ...prev, category: e.target.value }))}
-                  className="bg-gray-800 border-gray-600 text-white"
-                />
-                <Input
-                  placeholder="Stage"
-                  value={storyData.stage}
-                  onChange={(e) => setStoryData(prev => ({ ...prev, stage: e.target.value }))}
-                  className="bg-gray-800 border-gray-600 text-white"
-                />
-              </div>
-            </div>
-
-            {/* Preview Tags */}
-            {(storyData.title || storyData.content) && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium text-gray-300 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  Auto-generated Tags Preview:
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {extractTagsFromContent(storyData.content, storyData.title).map(tag => (
-                    <Badge key={tag} className="bg-blue-100 text-blue-800">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Comments Section */}
-            <div className="space-y-4">
-              <h4 className="text-lg font-semibold text-white flex items-center gap-2">
-                <MessageSquarePlus className="w-5 h-5" />
-                Comments (Optional)
-              </h4>
-              
-              {/* Add Comment */}
-              <div className="flex gap-2">
-                <Textarea
-                  placeholder="Add a comment to this story..."
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  className="bg-gray-800 border-gray-600 text-white min-h-[60px] flex-1"
-                />
-                <Button
-                  onClick={addComment}
-                  disabled={!newComment.trim()}
-                  className="bg-green-600 hover:bg-green-700 text-white self-start"
-                >
-                  <PlusCircle className="w-4 h-4" />
-                </Button>
-              </div>
-              
-              {/* Comments List */}
-              {storyData.comments.length > 0 && (
-                <div className="space-y-3 max-h-60 overflow-y-auto">
-                  {storyData.comments.map((comment) => (
-                    <div key={comment.id} className="bg-gray-800 rounded-lg p-3 flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="text-sm font-medium text-blue-400 mb-1">
-                          {comment.username}
-                        </div>
-                        <div className="text-gray-300 text-sm">
-                          {comment.content}
-                        </div>
-                      </div>
-                      <Button
-                        onClick={() => removeComment(comment.id)}
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-400 hover:text-red-300 ml-2"
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Submit Button */}
-            <div className="flex gap-3 pt-4">
               <Button
-                onClick={handleSubmit}
-                disabled={loading || isClassifying || !storyData.title || !storyData.content}
-                className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white flex-1"
-              >
-                {loading || isClassifying ? 'Adding Story...' : 'Add to Community Feed'}
-              </Button>
-              <Button
-                onClick={resetForm}
+                onClick={generateNewUsername}
                 variant="outline"
+                size="sm"
                 className="border-gray-600 text-gray-300 hover:text-white"
               >
-                Reset
+                Generate
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+            
+            <Input
+              placeholder="Story Title *"
+              value={storyData.title}
+              onChange={(e) => setStoryData(prev => ({ ...prev, title: e.target.value }))}
+              className="bg-gray-800 border-gray-600 text-white"
+            />
+            
+            <Textarea
+              placeholder="User's immigration story content *"
+              value={storyData.content}
+              onChange={(e) => setStoryData(prev => ({ ...prev, content: e.target.value }))}
+              className="min-h-[120px] bg-gray-800 border-gray-600 text-white"
+            />
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Input
+                placeholder="Country"
+                value={storyData.country}
+                onChange={(e) => setStoryData(prev => ({ ...prev, country: e.target.value }))}
+                className="bg-gray-800 border-gray-600 text-white"
+              />
+              <Input
+                placeholder="Category/Visa Type"
+                value={storyData.category}
+                onChange={(e) => setStoryData(prev => ({ ...prev, category: e.target.value }))}
+                className="bg-gray-800 border-gray-600 text-white"
+              />
+              <Input
+                placeholder="Stage"
+                value={storyData.stage}
+                onChange={(e) => setStoryData(prev => ({ ...prev, stage: e.target.value }))}
+                className="bg-gray-800 border-gray-600 text-white"
+              />
+            </div>
+          </div>
+
+          {/* Preview Tags */}
+          {(storyData.title || storyData.content) && (
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                Auto-generated Tags Preview:
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {extractTagsFromContent(storyData.content, storyData.title).map(tag => (
+                  <Badge key={tag} className="bg-blue-100 text-blue-800">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Comments Section */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-white flex items-center gap-2">
+              <MessageSquarePlus className="w-5 h-5" />
+              Comments (Optional)
+            </h4>
+            
+            {/* Add Comment */}
+            <div className="flex gap-2">
+              <Textarea
+                placeholder="Add a comment to this story..."
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                className="bg-gray-800 border-gray-600 text-white min-h-[60px] flex-1"
+              />
+              <Button
+                onClick={addComment}
+                disabled={!newComment.trim()}
+                className="bg-green-600 hover:bg-green-700 text-white self-start"
+              >
+                <PlusCircle className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            {/* Comments List */}
+            {storyData.comments.length > 0 && (
+              <div className="space-y-3 max-h-60 overflow-y-auto">
+                {storyData.comments.map((comment) => (
+                  <div key={comment.id} className="bg-gray-800 rounded-lg p-3 flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-blue-400 mb-1">
+                        {comment.username}
+                      </div>
+                      <div className="text-gray-300 text-sm">
+                        {comment.content}
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => removeComment(comment.id)}
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-400 hover:text-red-300 ml-2"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <div className="flex gap-3 pt-4">
+            <Button
+              onClick={handleSubmit}
+              disabled={loading || isClassifying || !storyData.title || !storyData.content}
+              className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white flex-1"
+            >
+              {loading || isClassifying ? 'Adding Story...' : 'Add to Community Feed'}
+            </Button>
+            <Button
+              onClick={resetForm}
+              variant="outline"
+              className="border-gray-600 text-gray-300 hover:text-white"
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
