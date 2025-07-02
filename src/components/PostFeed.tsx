@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquarePlus, Heart, MessageSquare, Share, Users, Globe, Plus, X, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageSquarePlus, Heart, MessageSquare, Share, Users, Globe, Plus, X, Sparkles, ChevronDown, ChevronUp, Send } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroqClassification } from '@/hooks/useGroqClassification';
@@ -42,6 +41,8 @@ const PostFeed = () => {
   const [loading, setLoading] = useState(true);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
+  const [newComments, setNewComments] = useState<{ [postId: string]: string }>({});
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
 
   const [newPost, setNewPost] = useState({
     title: '',
@@ -92,6 +93,151 @@ const PostFeed = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLike = async (postId: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to like posts",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const post = posts.find(p => p.id === postId);
+      if (!post) return;
+
+      const isLiked = likedPosts.has(postId);
+      const newLikesCount = isLiked ? post.likes - 1 : post.likes + 1;
+
+      // Update local state immediately for better UX
+      setLikedPosts(prev => {
+        const newSet = new Set(prev);
+        if (isLiked) {
+          newSet.delete(postId);
+        } else {
+          newSet.add(postId);
+        }
+        return newSet;
+      });
+
+      setPosts(prev => prev.map(p => 
+        p.id === postId ? { ...p, likes: newLikesCount } : p
+      ));
+
+      // Update database
+      const { error } = await supabase
+        .from('posts')
+        .update({ likes: newLikesCount })
+        .eq('id', postId);
+
+      if (error) throw error;
+
+      toast({
+        title: isLiked ? "Like removed" : "Post liked!",
+        description: isLiked ? "You unliked this post" : "Thanks for your support!",
+      });
+    } catch (error) {
+      console.error('Error updating like:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update like",
+        variant: "destructive"
+      });
+      // Revert local state on error
+      fetchPosts();
+    }
+  };
+
+  const handleAddComment = async (postId: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to comment",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const commentContent = newComments[postId];
+    if (!commentContent?.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a comment",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('post_replies')
+        .insert({
+          post_id: postId,
+          user_id: user.id,
+          content: commentContent.trim()
+        });
+
+      if (error) throw error;
+
+      // Update comments count
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        const { error: updateError } = await supabase
+          .from('posts')
+          .update({ comments: (post.comments || 0) + 1 })
+          .eq('id', postId);
+
+        if (updateError) throw updateError;
+      }
+
+      // Clear comment input
+      setNewComments(prev => ({ ...prev, [postId]: '' }));
+      
+      toast({
+        title: "Comment added!",
+        description: "Your comment has been posted successfully",
+      });
+
+      // Refresh posts to show new comment
+      fetchPosts();
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add comment",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleShare = async (post: Post) => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: post.title,
+          text: `Check out this immigration story: ${post.title}`,
+          url: window.location.href
+        });
+      } else {
+        // Fallback - copy to clipboard
+        const shareText = `Check out this immigration story: "${post.title}" - ${post.content.substring(0, 100)}...`;
+        await navigator.clipboard.writeText(shareText);
+        toast({
+          title: "Copied to clipboard!",
+          description: "Post content has been copied to your clipboard",
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      toast({
+        title: "Share failed",
+        description: "Unable to share this post",
+        variant: "destructive"
+      });
     }
   };
 
@@ -361,8 +507,15 @@ const PostFeed = () => {
               
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center space-x-6">
-                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-400 hover:bg-red-400/10">
-                    <Heart className="w-4 h-4 mr-2" />
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className={`text-gray-400 hover:text-red-400 hover:bg-red-400/10 ${
+                      likedPosts.has(post.id) ? 'text-red-400 bg-red-400/10' : ''
+                    }`}
+                    onClick={() => handleLike(post.id)}
+                  >
+                    <Heart className={`w-4 h-4 mr-2 ${likedPosts.has(post.id) ? 'fill-current' : ''}`} />
                     {post.likes || 0}
                   </Button>
                   <Button 
@@ -379,7 +532,12 @@ const PostFeed = () => {
                       <ChevronDown className="w-4 h-4 ml-1" />
                     )}
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-green-400 hover:bg-green-400/10">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-gray-400 hover:text-green-400 hover:bg-green-400/10"
+                    onClick={() => handleShare(post)}
+                  >
                     <Share className="w-4 h-4 mr-2" />
                     Share
                   </Button>
@@ -399,18 +557,45 @@ const PostFeed = () => {
               </div>
 
               {/* Comments Section */}
-              {expandedComments.has(post.id) && post.post_replies && post.post_replies.length > 0 && (
+              {expandedComments.has(post.id) && (
                 <div className="mt-4 pl-4 border-l-2 border-gray-700 space-y-3">
-                  {post.post_replies.map((reply) => (
-                    <div key={reply.id} className="bg-gray-700/30 rounded-lg p-3">
-                      <div className="text-gray-300 text-sm">
-                        {reply.content}
-                      </div>
-                      <div className="text-gray-500 text-xs mt-1">
-                        {new Date(reply.created_at).toLocaleDateString()}
-                      </div>
+                  {/* Add Comment Input */}
+                  {user && (
+                    <div className="flex gap-2 mb-4">
+                      <Textarea
+                        placeholder="Write a comment..."
+                        value={newComments[post.id] || ''}
+                        onChange={(e) => setNewComments(prev => ({ ...prev, [post.id]: e.target.value }))}
+                        className="flex-1 bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-lg min-h-[80px]"
+                      />
+                      <Button
+                        onClick={() => handleAddComment(post.id)}
+                        size="sm"
+                        className="bg-blue-600 hover:bg-blue-700 text-white self-end"
+                        disabled={!newComments[post.id]?.trim()}
+                      >
+                        <Send className="w-4 h-4" />
+                      </Button>
                     </div>
-                  ))}
+                  )}
+
+                  {/* Existing Comments */}
+                  {post.post_replies && post.post_replies.length > 0 ? (
+                    post.post_replies.map((reply) => (
+                      <div key={reply.id} className="bg-gray-700/30 rounded-lg p-3">
+                        <div className="text-gray-300 text-sm">
+                          {reply.content}
+                        </div>
+                        <div className="text-gray-500 text-xs mt-1">
+                          {new Date(reply.created_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-gray-500 text-sm italic">
+                      No comments yet. Be the first to comment!
+                    </div>
+                  )}
                 </div>
               )}
             </div>
