@@ -194,7 +194,7 @@ const AdminPanel = () => {
               ...prev,
               username: e.target.value
             }))} className="bg-gray-800 border-gray-600 text-white flex-1" />
-              <Button onClick={generateNewUsername} variant="outline" size="sm" className="border-gray-600 text-gray-950">
+              <Button onClick={generateNewUsername} variant="outline" size="sm" className="border-gray-600 text-gray-950 bg-zinc-50">
                 Generate
               </Button>
             </div>
@@ -276,7 +276,7 @@ const AdminPanel = () => {
             <Button onClick={handleSubmit} disabled={loading || isClassifying || !storyData.title || !storyData.content} className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white flex-1">
               {loading || isClassifying ? 'Adding Story...' : 'Add to Community Feed'}
             </Button>
-            <Button onClick={resetForm} variant="outline" className="border-gray-600 text-gray-950">
+            <Button onClick={resetForm} variant="outline" className="border-gray-600 text-gray-950 bg-neutral-50">
               Reset
             </Button>
           </div>
