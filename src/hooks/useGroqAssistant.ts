@@ -8,11 +8,23 @@ export const useGroqAssistant = () => {
   const askQuestion = async (question: string) => {
     setIsLoading(true);
     try {
+      console.log('Calling AI assistant with question:', question);
+      
       const { data, error } = await supabase.functions.invoke('ai-assistant', {
         body: { question }
       });
 
-      if (error) throw error;
+      console.log('AI assistant response:', { data, error });
+
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(`AI Assistant Error: ${error.message}`);
+      }
+      
+      if (!data || !data.answer) {
+        throw new Error('No response received from AI assistant');
+      }
+      
       return data.answer;
     } catch (error) {
       console.error('AI Assistant error:', error);

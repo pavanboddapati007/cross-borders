@@ -13,9 +13,19 @@ serve(async (req) => {
   }
 
   try {
-    const { question } = await req.json()
+    console.log('AI Assistant function called')
+    
+    const requestBody = await req.json()
+    console.log('Request body:', requestBody)
+    
+    const { question } = requestBody
+    if (!question) {
+      throw new Error('No question provided')
+    }
     
     const groqApiKey = Deno.env.get('GROQ_API_KEY')
+    console.log('GROQ_API_KEY configured:', !!groqApiKey)
+    
     if (!groqApiKey) {
       throw new Error('GROQ_API_KEY not configured')
     }
@@ -82,6 +92,7 @@ ${context}`
     )
 
   } catch (error) {
+    console.error('AI Assistant error:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
