@@ -210,8 +210,8 @@ const AdminPanel = () => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-start justify-center p-4 pt-8 overflow-y-auto">
+      <div className="w-full max-w-4xl min-h-fit">
         <Card className="bg-gray-900 border-gray-700 w-full">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-white flex items-center gap-2">
