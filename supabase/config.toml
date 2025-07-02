@@ -1,1 +1,7 @@
 project_id = "tckigeemwfhkqzholjmt"
+
+[functions.ai-assistant]
+verify_jwt = false
+
+[functions.classify-post]
+verify_jwt = false
