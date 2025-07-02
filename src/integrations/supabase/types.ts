@@ -55,9 +55,12 @@ export type Database = {
           likes: number | null
           stage: string | null
           status: string | null
+          tags: string[] | null
+          target_country: string | null
           title: string
           updated_at: string
           user_id: string | null
+          visa_type: string | null
         }
         Insert: {
           category?: string | null
@@ -72,9 +75,12 @@ export type Database = {
           likes?: number | null
           stage?: string | null
           status?: string | null
+          tags?: string[] | null
+          target_country?: string | null
           title: string
           updated_at?: string
           user_id?: string | null
+          visa_type?: string | null
         }
         Update: {
           category?: string | null
@@ -89,9 +95,12 @@ export type Database = {
           likes?: number | null
           stage?: string | null
           status?: string | null
+          tags?: string[] | null
+          target_country?: string | null
           title?: string
           updated_at?: string
           user_id?: string | null
+          visa_type?: string | null
         }
         Relationships: []
       }
