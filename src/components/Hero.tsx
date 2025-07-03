@@ -125,31 +125,31 @@ const Hero = ({
   const filteredStories = activeTab === 'featured' 
     ? (posts || []).filter(story => story.featured) 
     : (posts || []).filter(story => story.trending);
-  return <div className="space-y-20">
+  return <div className="space-y-12 sm:space-y-20">
       {/* Hero Section */}
-      <div className="text-center space-y-8 py-8 relative">
+      <div className="text-center space-y-6 sm:space-y-8 py-6 sm:py-8 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 rounded-3xl blur-3xl"></div>
-        <div className="relative z-10 max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-full px-4 py-2 mb-6">
-            <Sparkles className="w-5 h-5 text-emerald-400" />
-            <span className="text-emerald-300 font-medium">AI-Powered Immigration Platform</span>
+        <div className="relative z-10 max-w-4xl mx-auto px-4">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 mb-4 sm:mb-6">
+            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+            <span className="text-emerald-300 font-medium text-sm sm:text-base">AI-Powered Immigration Platform</span>
           </div>
           
-          <h1 className="text-6xl md:text-7xl font-bold leading-tight mb-6">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4 sm:mb-6">
             <span className="block text-white">Your immigration story</span>
             <span className="block bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">doesn't stop.</span>
           </h1>
           
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-8">
+          <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-6 sm:mb-8 px-4">
             Share what's real, learn from others, and get AI-powered help to keep moving forward.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button onClick={() => onNavigate('feed')} size="lg" className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all duration-300 hover:shadow-emerald-500/40">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
+            <Button onClick={() => onNavigate('feed')} size="lg" className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all duration-300 hover:shadow-emerald-500/40 text-sm sm:text-base">
               Start your journey
-              <ArrowRight className="ml-2 w-5 h-5" />
+              <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
-            <Button onClick={() => onNavigate('ai-assistant')} variant="outline" size="lg" className="border-2 border-gray-600 text-gray-300 hover:text-white hover:border-gray-500 px-8 py-4 rounded-xl font-semibold backdrop-blur-sm transition-all duration-300 bg-gray-900/50 hover:bg-gray-800/50">
+            <Button onClick={() => onNavigate('ai-assistant')} variant="outline" size="lg" className="border-2 border-gray-600 text-gray-300 hover:text-white hover:border-gray-500 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold backdrop-blur-sm transition-all duration-300 bg-gray-900/50 hover:bg-gray-800/50 text-sm sm:text-base">
               Try AI Assistant
             </Button>
           </div>
@@ -157,17 +157,17 @@ const Hero = ({
       </div>
 
       {/* Features Grid */}
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
         {features.map((feature, index) => {
         const Icon = feature.icon;
         return <Card key={index} className="group cursor-pointer transition-all duration-300 hover:scale-105 border border-gray-800/50 bg-gray-900/50 backdrop-blur-xl hover:bg-gray-800/50 rounded-2xl overflow-hidden" onClick={feature.action}>
-              <CardContent className="p-8 text-center space-y-6 relative">
+              <CardContent className="p-6 sm:p-8 text-center space-y-4 sm:space-y-6 relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/5 to-teal-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className={`w-16 h-16 mx-auto rounded-2xl bg-gradient-to-r ${feature.gradient} flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg relative z-10`}>
-                  <Icon className="w-8 h-8 text-white" />
+                <div className={`w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-2xl bg-gradient-to-r ${feature.gradient} flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg relative z-10`}>
+                  <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-white relative z-10">{feature.title}</h3>
-                <p className="text-gray-300 leading-relaxed relative z-10">{feature.description}</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-white relative z-10">{feature.title}</h3>
+                <p className="text-gray-300 leading-relaxed relative z-10 text-sm sm:text-base">{feature.description}</p>
                 <Button variant="ghost" className="w-full mt-6 bg-white/5 hover:bg-white/10 border border-gray-700 hover:border-gray-600 rounded-xl transition-all duration-300 backdrop-blur-sm text-white relative z-10">
                   Explore Now
                   <ArrowRight className="ml-2 w-4 h-4" />
@@ -178,37 +178,40 @@ const Hero = ({
       </div>
 
       {/* Featured & Trending Stories Section */}
-      <div className="space-y-8">
-        <div className="flex items-center justify-between">
+      <div className="space-y-6 sm:space-y-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-2">Stories</h2>
-            <p className="text-gray-400">Inspiring journeys from our community</p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Stories</h2>
+            <p className="text-gray-400 text-sm sm:text-base">Inspiring journeys from our community</p>
           </div>
-          <Button onClick={() => onNavigate('feed')} className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-500/25">
-            <Plus className="w-5 h-5" />
-            Share Your Story
+          <Button onClick={() => onNavigate('feed')} className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-500/25 text-sm sm:text-base">
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Share Your Story</span>
+            <span className="sm:hidden">Share Story</span>
           </Button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-4">
-          <Button onClick={() => setActiveTab('featured')} variant={activeTab === 'featured' ? "default" : "outline"} className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${activeTab === 'featured' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25' : 'border-gray-700 text-gray-300 hover:text-white hover:border-gray-600 bg-gray-900/50'}`}>
-            <Star className="w-5 h-5" />
-            Featured Stories
+        <div className="flex gap-2 sm:gap-4">
+          <Button onClick={() => setActiveTab('featured')} variant={activeTab === 'featured' ? "default" : "outline"} className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 text-sm sm:text-base ${activeTab === 'featured' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25' : 'border-gray-700 text-gray-300 hover:text-white hover:border-gray-600 bg-gray-900/50'}`}>
+            <Star className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Featured Stories</span>
+            <span className="sm:hidden">Featured</span>
           </Button>
-          <Button onClick={() => setActiveTab('trending')} variant={activeTab === 'trending' ? "default" : "outline"} className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${activeTab === 'trending' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25' : 'border-gray-700 text-gray-300 hover:text-white hover:border-gray-600 bg-gray-900/50'}`}>
-            <TrendingUp className="w-5 h-5" />
-            Trending Now
+          <Button onClick={() => setActiveTab('trending')} variant={activeTab === 'trending' ? "default" : "outline"} className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 text-sm sm:text-base ${activeTab === 'trending' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25' : 'border-gray-700 text-gray-300 hover:text-white hover:border-gray-600 bg-gray-900/50'}`}>
+            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Trending Now</span>
+            <span className="sm:hidden">Trending</span>
           </Button>
         </div>
 
         {/* Stories */}
-        <div className="space-y-6">
-          {filteredStories.map(story => <Card key={story.id} className="bg-gray-900/30 backdrop-blur-xl border-gray-800/50 rounded-2xl p-8 hover:bg-gray-800/30 transition-all duration-300 hover:border-gray-700/50 cursor-pointer group" onClick={() => onNavigate('feed')}>
-              <div className="space-y-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors duration-300">{story.title}</h3>
+        <div className="space-y-4 sm:space-y-6">
+          {filteredStories.map(story => <Card key={story.id} className="bg-gray-900/30 backdrop-blur-xl border-gray-800/50 rounded-2xl p-4 sm:p-6 md:p-8 hover:bg-gray-800/30 transition-all duration-300 hover:border-gray-700/50 cursor-pointer group" onClick={() => onNavigate('feed')}>
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors duration-300 leading-tight">{story.title}</h3>
                     {story.featured && <Badge className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border-emerald-500/30">
                         <Star className="w-3 h-3 mr-1" />
                         Featured
@@ -218,7 +221,7 @@ const Hero = ({
                         Trending
                       </Badge>}
                   </div>
-                  <div className="flex gap-2 flex-shrink-0">
+                  <div className="flex gap-2 flex-shrink-0 mt-2 sm:mt-0">
                     <Badge className="bg-gray-800 text-gray-200 border-gray-700">
                       {story.category}
                     </Badge>
@@ -228,7 +231,7 @@ const Hero = ({
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-6 text-gray-400">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-gray-400 text-sm">
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4" />
                     <span>{story.author}</span>
@@ -242,12 +245,12 @@ const Hero = ({
                   </div>
                 </div>
                 
-                <p className="text-gray-300 leading-relaxed">
+                <p className="text-gray-300 leading-relaxed text-sm sm:text-base">
                   {story.content}
                 </p>
 
                 {/* Story Stats */}
-                <div className="flex items-center gap-6 pt-4 border-t border-gray-800/50">
+                <div className="flex items-center gap-3 sm:gap-6 pt-3 sm:pt-4 border-t border-gray-800/50 text-sm">
                   <div className="flex items-center gap-2 text-gray-400 hover:text-red-400 transition-colors">
                     <Heart className="w-4 h-4" />
                     <span className="font-medium">{story.likes}</span>
@@ -261,9 +264,10 @@ const Hero = ({
                     <span className="font-medium">{story.views}</span>
                   </div>
                   <div className="ml-auto">
-                    <Button variant="ghost" size="sm" className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10">
-                      Read More
-                      <ArrowRight className="w-4 h-4 ml-1" />
+                    <Button variant="ghost" size="sm" className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10 text-xs sm:text-sm px-2 sm:px-3">
+                      <span className="hidden sm:inline">Read More</span>
+                      <span className="sm:hidden">Read</span>
+                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
                     </Button>
                   </div>
                 </div>
@@ -272,10 +276,10 @@ const Hero = ({
         </div>
 
         {/* View All Stories Button */}
-        <div className="text-center pt-8">
-          <Button onClick={() => onNavigate('feed')} variant="outline" size="lg" className="border-2 border-gray-700 hover:border-emerald-500 hover:bg-emerald-500/10 px-8 py-4 rounded-xl font-semibold transition-all duration-300 text-zinc-950">
+        <div className="text-center pt-6 sm:pt-8">
+          <Button onClick={() => onNavigate('feed')} variant="outline" size="lg" className="border-2 border-gray-700 hover:border-emerald-500 hover:bg-emerald-500/10 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold transition-all duration-300 text-white text-sm sm:text-base">
             View All Stories
-            <ArrowRight className="ml-2 w-5 h-5" />
+            <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
         </div>
       </div>

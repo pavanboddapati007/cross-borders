@@ -36,7 +36,7 @@ const Index = () => {
         <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100px_100px]"></div>
         
         <Navigation activeSection={activeSection} onNavigate={setActiveSection} />
-        <main className="container mx-auto px-6 py-8 relative z-10">
+        <main className="container mx-auto px-4 sm:px-6 py-4 sm:py-8 relative z-10">
           {renderContent()}
         </main>
         <Toaster />
