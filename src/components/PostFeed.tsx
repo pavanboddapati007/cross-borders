@@ -201,12 +201,30 @@ const PostFeed = () => {
   // Delete reply mutation
   const deleteReplyMutation = useMutation({
     mutationFn: async (replyId: string) => {
+      // First get the reply to find its post_id
+      const { data: reply, error: replyError } = await supabase
+        .from('post_replies')
+        .select('post_id')
+        .eq('id', replyId)
+        .single();
+
+      if (replyError) throw replyError;
+
       const { error } = await supabase
         .from('post_replies')
         .delete()
         .eq('id', replyId);
 
       if (error) throw error;
+
+      // Update comment count
+      const post = posts?.find(p => p.id === reply.post_id);
+      const newCommentCount = Math.max(0, (post?.comments || 0) - 1);
+      
+      await supabase
+        .from('posts')
+        .update({ comments: newCommentCount })
+        .eq('id', reply.post_id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['post_replies'] });
