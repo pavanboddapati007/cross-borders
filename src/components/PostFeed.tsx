@@ -6,14 +6,16 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Trash2, Share } from 'lucide-react';
+import { Heart, MessageCircle, Trash2, Share, Edit } from 'lucide-react';
 import { toast } from 'sonner';
+import PostStoryDialog from './PostStoryDialog';
 
 const PostFeed = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState('');
+  const [postDialogOpen, setPostDialogOpen] = useState(false);
 
   // Fetch posts with user profiles and like status
   const { data: posts, isLoading: postsLoading } = useQuery({
@@ -242,17 +244,14 @@ const PostFeed = () => {
 
   return (
     <div className="bg-black min-h-screen">
-      {/* Share Post Button */}
+      {/* Post Story Button */}
       <div className="pt-4 pb-6 flex justify-center border-b border-gray-800">
         <Button 
           className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-full font-medium"
-          onClick={() => {
-            // You can implement post creation logic here
-            toast.success('Post sharing feature coming soon!');
-          }}
+          onClick={() => setPostDialogOpen(true)}
         >
-          <Share className="h-4 w-4 mr-2" />
-          Share Your Story
+          <Edit className="h-4 w-4 mr-2" />
+          Post Your Story
         </Button>
       </div>
 
@@ -427,6 +426,11 @@ const PostFeed = () => {
           </div>
         ))}
       </div>
+
+      <PostStoryDialog 
+        open={postDialogOpen} 
+        onOpenChange={setPostDialogOpen} 
+      />
     </div>
   );
 };
