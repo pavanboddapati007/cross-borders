@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Bot, User, Send, Sparkles, ArrowUp, Search } from 'lucide-react';
 import { useGroqAssistant } from '@/hooks/useGroqAssistant';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 interface Message {
   id: string;
   content: string;
@@ -13,17 +14,22 @@ interface Message {
   timestamp: string;
 }
 const AIAssistant = () => {
+  const { user } = useAuth();
   const {
     askQuestion,
     isLoading
   } = useGroqAssistant();
-  const [messages, setMessages] = useState<Message[]>([{
+  
+  const getInitialMessage = () => ({
     id: '1',
     content: 'Hello! I\'m your AI Immigration Assistant powered by real community experiences. I can help you with questions about visa processes, documentation requirements, timelines, and immigration policies based on actual user stories and my knowledge. How can I assist you today?',
     isUser: false,
     timestamp: new Date().toLocaleTimeString()
-  }]);
+  });
+  
+  const [messages, setMessages] = useState<Message[]>([getInitialMessage()]);
   const [inputMessage, setInputMessage] = useState('');
+  const [currentUserId, setCurrentUserId] = useState<string | null>(user?.id || null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const commonQuestions = ['How long does a green card application take?', 'What documents do I need for a student visa?', 'Can I work while my asylum case is pending?', 'How to check my case status?', 'What are the requirements for citizenship?'];
   const scrollToBottom = () => {
@@ -31,6 +37,15 @@ const AIAssistant = () => {
       behavior: "smooth"
     });
   };
+  // Reset messages when user changes
+  useEffect(() => {
+    const newUserId = user?.id || null;
+    if (currentUserId !== newUserId) {
+      setMessages([getInitialMessage()]);
+      setCurrentUserId(newUserId);
+    }
+  }, [user?.id, currentUserId]);
+  
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
