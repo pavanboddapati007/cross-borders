@@ -199,6 +199,36 @@ const PostFeed = () => {
     },
   });
 
+  // Delete post mutation
+  const deletePostMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      // First delete all replies for this post
+      const { error: repliesError } = await supabase
+        .from('post_replies')
+        .delete()
+        .eq('post_id', postId);
+
+      if (repliesError) throw repliesError;
+
+      // Then delete the post
+      const { error: postError } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', postId);
+
+      if (postError) throw postError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ['post_replies'] });
+      toast.success('Post deleted successfully!');
+    },
+    onError: (error) => {
+      console.error('Error deleting post:', error);
+      toast.error('Failed to delete post');
+    },
+  });
+
   // Delete reply mutation
   const deleteReplyMutation = useMutation({
     mutationFn: async (replyId: string) => {
@@ -247,11 +277,20 @@ const PostFeed = () => {
     addReplyMutation.mutate({ postId, content: replyContent });
   };
 
+  const handleDeletePost = (postId: string) => {
+    if (window.confirm('Are you sure you want to delete this post and all its comments?')) {
+      deletePostMutation.mutate(postId);
+    }
+  };
+
   const handleDeleteReply = (replyId: string) => {
     if (window.confirm('Are you sure you want to delete this reply?')) {
       deleteReplyMutation.mutate(replyId);
     }
   };
+
+  // Check if user is admin
+  const isAdmin = user?.email === 'bpavan2023@gmail.com';
 
   const getPostReplies = (postId: string) => {
     return replies?.filter(reply => reply.post_id === postId) || [];
@@ -381,6 +420,19 @@ const PostFeed = () => {
                     <Share className="h-4 w-4" />
                     <span>Share</span>
                   </Button>
+
+                  {/* Admin delete post button */}
+                  {isAdmin && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeletePost(post.id)}
+                      className="flex items-center space-x-1 h-8 px-2 rounded-full text-xs text-red-400 hover:text-red-300 hover:bg-red-950"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span>Delete</span>
+                    </Button>
+                  )}
                 </div>
 
                 {/* Reply form */}
@@ -445,16 +497,16 @@ const PostFeed = () => {
                                       {displayUsername}
                                     </span>
                                   </div>
-                                  {user && reply.user_id === user.id && (
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleDeleteReply(reply.id)}
-                                      className="h-5 w-5 p-0 text-red-400 hover:text-red-300 hover:bg-red-950"
-                                    >
-                                      <Trash2 className="h-3 w-3" />
-                                    </Button>
-                                  )}
+                                   {(user && reply.user_id === user.id) || isAdmin ? (
+                                     <Button
+                                       variant="ghost"
+                                       size="sm"
+                                       onClick={() => handleDeleteReply(reply.id)}
+                                       className="h-5 w-5 p-0 text-red-400 hover:text-red-300 hover:bg-red-950"
+                                     >
+                                       <Trash2 className="h-3 w-3" />
+                                     </Button>
+                                   ) : null}
                                 </div>
                                 <p className="text-xs text-gray-300 mt-1 leading-relaxed whitespace-pre-wrap">
                                   {displayContent}
