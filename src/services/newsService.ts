@@ -113,7 +113,7 @@ const categorizeNews = (title: string, description: string): string => {
   if (text.includes('policy') || text.includes('law') || text.includes('regulation') || text.includes('rule')) {
     return 'Policy Update';
   }
-  if (text.includes('visa') || text.includes('green card') || text.includes('citizenship') || text.includes('h1b') || text.includes('eb5')) {
+  if (text.includes('visa') || text.includes('green card') || text.includes('citizenship') || text.includes('F1 Visa')|| text.includes('Student Visa')|| text.includes('OPT')|| text.includes('h1b') || text.includes('eb5')) {
     return 'Visa News';
   }
   if (text.includes('border') || text.includes('customs') || text.includes('enforcement') || text.includes('ice') || text.includes('cbp')) {
