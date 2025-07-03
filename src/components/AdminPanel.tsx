@@ -143,7 +143,8 @@ const AdminPanel = () => {
           status: 'Completed',
           tags: extractTagsFromContent(storyData.content, storyData.title),
           visa_type: storyData.category || null,
-          target_country: storyData.country || null
+          target_country: storyData.country || null,
+          display_username: storyData.username
         })
         .select()
         .single();

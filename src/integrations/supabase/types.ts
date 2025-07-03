@@ -72,6 +72,7 @@ export type Database = {
           content: string
           country: string | null
           created_at: string
+          display_username: string | null
           id: string
           likes: number | null
           stage: string | null
@@ -92,6 +93,7 @@ export type Database = {
           content: string
           country?: string | null
           created_at?: string
+          display_username?: string | null
           id?: string
           likes?: number | null
           stage?: string | null
@@ -112,6 +114,7 @@ export type Database = {
           content?: string
           country?: string | null
           created_at?: string
+          display_username?: string | null
           id?: string
           likes?: number | null
           stage?: string | null
