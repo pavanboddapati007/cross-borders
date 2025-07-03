@@ -29,20 +29,23 @@ const Hero = ({
   onNavigate
 }: HeroProps) => {
   const [activeTab, setActiveTab] = useState<'featured' | 'trending'>('featured');
-  
+
   // Fetch real posts from the database
-  const { data: posts, isLoading } = useQuery({
+  const {
+    data: posts,
+    isLoading
+  } = useQuery({
     queryKey: ['hero-posts'],
     queryFn: async () => {
       console.log('Fetching posts for hero...');
-      
-      // Fetch posts
-      const { data: postsData, error: postsError } = await supabase
-        .from('posts')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(6);
 
+      // Fetch posts
+      const {
+        data: postsData,
+        error: postsError
+      } = await supabase.from('posts').select('*').order('created_at', {
+        ascending: false
+      }).limit(6);
       if (postsError) {
         console.error('Error fetching posts:', postsError);
         throw postsError;
@@ -50,11 +53,10 @@ const Hero = ({
 
       // Fetch profiles for the posts
       const userIds = postsData?.map(post => post.user_id).filter(Boolean) || [];
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, username, full_name, avatar_url')
-        .in('id', userIds);
-
+      const {
+        data: profilesData,
+        error: profilesError
+      } = await supabase.from('profiles').select('id, username, full_name, avatar_url').in('id', userIds);
       if (profilesError) {
         console.error('Error fetching profiles:', profilesError);
         throw profilesError;
@@ -64,16 +66,15 @@ const Hero = ({
       const transformedPosts = postsData?.map(post => {
         const profile = profilesData?.find(profile => profile.id === post.user_id);
         const author = post.display_username || profile?.username || 'Anonymous';
-        
         return {
           id: post.id,
           title: post.title,
           author,
           country: post.country || post.target_country || 'Unknown',
-          date: new Date(post.created_at).toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric' 
+          date: new Date(post.created_at).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
           }),
           content: post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content,
           category: post.category || 'General',
@@ -81,15 +82,16 @@ const Hero = ({
           status: post.status || 'Planning',
           likes: post.likes || 0,
           comments: post.comments || 0,
-          views: Math.floor(Math.random() * 2000) + 100, // Generate random views for display
-          featured: Math.random() > 0.5, // Randomly assign featured status
-          trending: Math.random() > 0.6, // Randomly assign trending status
+          views: Math.floor(Math.random() * 2000) + 100,
+          // Generate random views for display
+          featured: Math.random() > 0.5,
+          // Randomly assign featured status
+          trending: Math.random() > 0.6 // Randomly assign trending status
         } as Story;
       }) || [];
-
       console.log('Transformed posts:', transformedPosts);
       return transformedPosts;
-    },
+    }
   });
   const features = [{
     icon: Users,
@@ -122,9 +124,7 @@ const Hero = ({
         return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
-  const filteredStories = activeTab === 'featured' 
-    ? (posts || []).filter(story => story.featured) 
-    : (posts || []).filter(story => story.trending);
+  const filteredStories = activeTab === 'featured' ? (posts || []).filter(story => story.featured) : (posts || []).filter(story => story.trending);
   return <div className="space-y-12 sm:space-y-20">
       {/* Hero Section */}
       <div className="text-center space-y-6 sm:space-y-8 py-6 sm:py-8 relative">
@@ -277,7 +277,7 @@ const Hero = ({
 
         {/* View All Stories Button */}
         <div className="text-center pt-6 sm:pt-8">
-          <Button onClick={() => onNavigate('feed')} variant="outline" size="lg" className="border-2 border-gray-700 hover:border-emerald-500 hover:bg-emerald-500/10 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold transition-all duration-300 text-white text-sm sm:text-base">
+          <Button onClick={() => onNavigate('feed')} variant="outline" size="lg" className="border-2 border-gray-700 hover:border-emerald-500 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base text-gray-950 bg-gray-50">
             View All Stories
             <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
