@@ -16,6 +16,7 @@ const PostFeed = () => {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState('');
   const [postDialogOpen, setPostDialogOpen] = useState(false);
+  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
 
   // Fetch posts with user profiles and like status
   const { data: posts, isLoading: postsLoading } = useQuery({
@@ -256,6 +257,16 @@ const PostFeed = () => {
     return replies?.filter(reply => reply.post_id === postId) || [];
   };
 
+  const toggleCommentsExpansion = (postId: string) => {
+    const newExpanded = new Set(expandedComments);
+    if (newExpanded.has(postId)) {
+      newExpanded.delete(postId);
+    } else {
+      newExpanded.add(postId);
+    }
+    setExpandedComments(newExpanded);
+  };
+
   if (postsLoading) {
     return <div className="flex justify-center p-4">Loading posts...</div>;
   }
@@ -408,42 +419,67 @@ const PostFeed = () => {
                 {/* Display replies */}
                 {getPostReplies(post.id).length > 0 && (
                   <div className="mt-3 space-y-2">
-                    {getPostReplies(post.id).map((reply) => {
-                      // Extract username from content if it's in [username]: format
-                      const usernameMatch = reply.content.match(/^\[([^\]]+)\]:\s*/);
-                      const displayUsername = usernameMatch ? usernameMatch[1] : (reply.profiles?.username || 'Anonymous');
-                      const displayContent = usernameMatch ? reply.content.replace(/^\[([^\]]+)\]:\s*/, '') : reply.content;
+                    {(() => {
+                      const postReplies = getPostReplies(post.id);
+                      const isExpanded = expandedComments.has(post.id);
+                      const displayReplies = isExpanded ? postReplies : postReplies.slice(0, 1);
                       
                       return (
-                        <div key={reply.id} className="bg-gray-900/50 p-3 rounded-lg border-l-2 border-gray-700">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-center space-x-2">
-                              <Avatar className="h-5 w-5">
-                                <AvatarFallback className="text-xs bg-gray-600 text-white">
-                                  {displayUsername?.[0]?.toUpperCase() || 'U'}
-                                </AvatarFallback>
-                              </Avatar>
-                              <span className="font-medium text-xs text-white">
-                                {displayUsername}
-                              </span>
-                            </div>
-                            {user && reply.user_id === user.id && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDeleteReply(reply.id)}
-                                className="h-5 w-5 p-0 text-red-400 hover:text-red-300 hover:bg-red-950"
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            )}
-                          </div>
-                          <p className="text-xs text-gray-300 mt-1 leading-relaxed whitespace-pre-wrap">
-                            {displayContent}
-                          </p>
-                        </div>
+                        <>
+                          {displayReplies.map((reply) => {
+                            // Extract username from content if it's in [username]: format
+                            const usernameMatch = reply.content.match(/^\[([^\]]+)\]:\s*/);
+                            const displayUsername = usernameMatch ? usernameMatch[1] : (reply.profiles?.username || 'Anonymous');
+                            const displayContent = usernameMatch ? reply.content.replace(/^\[([^\]]+)\]:\s*/, '') : reply.content;
+                            
+                            return (
+                              <div key={reply.id} className="bg-gray-900/50 p-3 rounded-lg border-l-2 border-gray-700">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex items-center space-x-2">
+                                    <Avatar className="h-5 w-5">
+                                      <AvatarFallback className="text-xs bg-gray-600 text-white">
+                                        {displayUsername?.[0]?.toUpperCase() || 'U'}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <span className="font-medium text-xs text-white">
+                                      {displayUsername}
+                                    </span>
+                                  </div>
+                                  {user && reply.user_id === user.id && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleDeleteReply(reply.id)}
+                                      className="h-5 w-5 p-0 text-red-400 hover:text-red-300 hover:bg-red-950"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  )}
+                                </div>
+                                <p className="text-xs text-gray-300 mt-1 leading-relaxed whitespace-pre-wrap">
+                                  {displayContent}
+                                </p>
+                              </div>
+                            );
+                          })}
+                          
+                          {/* Show more/less comments button */}
+                          {postReplies.length > 1 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleCommentsExpansion(post.id)}
+                              className="text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-950 p-2 rounded-lg"
+                            >
+                              {isExpanded 
+                                ? `Hide ${postReplies.length - 1} comments`
+                                : `Show ${postReplies.length - 1} more comments`
+                              }
+                            </Button>
+                          )}
+                        </>
                       );
-                    })}
+                    })()}
                   </div>
                 )}
               </div>
