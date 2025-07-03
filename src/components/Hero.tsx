@@ -176,7 +176,7 @@ const Hero = ({
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-2">Success Stories</h2>
+            <h2 className="text-4xl font-bold text-white mb-2">Stories</h2>
             <p className="text-gray-400">Inspiring journeys from our community</p>
           </div>
           <Button onClick={() => onNavigate('feed')} className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-500/25">
