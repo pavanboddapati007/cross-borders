@@ -340,7 +340,7 @@ const PostFeed = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-2">
                   <span className="font-medium text-white text-sm">
-                    {post.profiles?.username || 'Anonymous'}
+                    {post.display_username || post.profiles?.username || 'Anonymous'}
                   </span>
                   <span className="text-gray-500 text-xs">•</span>
                   <span className="text-gray-500 text-xs">1d ago</span>
