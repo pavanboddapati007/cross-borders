@@ -66,7 +66,7 @@ const Navigation = ({
             </div>
           </div>
           
-          <div className="flex items-center space-x-0.5 sm:space-x-1">
+          <div className="flex items-center justify-end space-x-0.5 sm:space-x-1 flex-1">
             {navItems.map(item => {
               const Icon = item.icon;
               const isActive = activeSection === item.id;
@@ -76,13 +76,13 @@ const Navigation = ({
                   variant="ghost"
                   size="sm"
                   onClick={() => onNavigate(item.id)}
-                  className={`flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1.5 rounded-lg transition-all duration-200 ${
+                  className={`flex items-center space-x-1 sm:space-x-1.5 px-1.5 sm:px-3 py-1.5 rounded-lg transition-all duration-200 ${
                     isActive 
                       ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
                       : "text-gray-300 hover:text-white hover:bg-white/5"
                   }`}
                 >
-                  <Icon size={14} className="sm:w-4 sm:h-4" />
+                  <Icon size={12} className="sm:w-4 sm:h-4" />
                   <span className="hidden md:inline font-medium text-xs sm:text-sm">{item.label}</span>
                 </Button>
               );

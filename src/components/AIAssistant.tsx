@@ -91,28 +91,24 @@ const AIAssistant = () => {
     handleSendMessage(question);
   };
   return <div className="min-h-screen bg-gray-950 flex flex-col">
-      {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700 p-6 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center space-y-3">
-            <h2 className="text-2xl font-bold text-white">
+      {/* Chat Messages */}
+      <div className="flex-1 max-w-4xl mx-auto w-full px-4 py-6">
+        {/* Header with Disclaimer - now scrolls with content */}
+        <div className="mb-6">
+          <div className="text-center space-y-3 mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-white">
               Immigration Assistant
             </h2>
-            
           </div>
           
           {/* Disclaimer */}
-          <div className="mt-4 p-3 bg-amber-900/20 border border-amber-700/30 rounded-lg">
-            <p className="text-sm text-amber-200">
+          <div className="p-3 sm:p-4 bg-amber-900/20 border border-amber-700/30 rounded-lg">
+            <p className="text-xs sm:text-sm text-amber-200">
               <strong>Disclaimer:</strong> This AI assistant provides general information based on community experiences and should not be considered legal advice. 
               Immigration law is complex and individual cases vary. Always consult with a qualified immigration attorney for personalized guidance.
             </p>
           </div>
         </div>
-      </div>
-
-      {/* Chat Messages */}
-      <div className="flex-1 max-w-4xl mx-auto w-full px-4 py-6">
         <div className="space-y-6">
           {messages.map(message => <div key={message.id} className={`flex space-x-4 ${message.isUser ? 'flex-row-reverse space-x-reverse' : ''}`}>
               <Avatar className="w-8 h-8 flex-shrink-0 mt-1">
