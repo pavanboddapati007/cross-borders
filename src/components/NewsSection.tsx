@@ -56,7 +56,7 @@ const NewsSection = () => {
     }
   };
 
-  const categories = ['all', 'Policy Update', 'Visa News', 'Border Security', 'Legal News', 'Immigration Reform', 'General News'];
+  const categories = ['all', 'Work Visa', 'Student Visa', 'Green Card', 'Tourist Visa', 'Family Visa', 'Policy Update', 'Border Security', 'Legal News', 'Immigration Reform', 'General News'];
   const countries = ['all', 'USA'];
 
   const filteredNews = newsItems.filter(item => {

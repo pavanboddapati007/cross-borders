@@ -110,11 +110,23 @@ const parseRSSFeed = async (rssUrl: string): Promise<RSSItem[]> => {
 const categorizeNews = (title: string, description: string): string => {
   const text = (title + ' ' + description).toLowerCase();
   
+  if (text.includes('h1b') || text.includes('h-1b') || text.includes('work visa') || text.includes('employment visa')) {
+    return 'Work Visa';
+  }
+  if (text.includes('f1') || text.includes('f-1') || text.includes('student visa') || text.includes('opt') || text.includes('stem opt') || text.includes('cpt')) {
+    return 'Student Visa';
+  }
+  if (text.includes('green card') || text.includes('permanent resident') || text.includes('eb1') || text.includes('eb2') || text.includes('eb3') || text.includes('eb5')) {
+    return 'Green Card';
+  }
+  if (text.includes('tourist visa') || text.includes('b1') || text.includes('b-1') || text.includes('b2') || text.includes('b-2') || text.includes('visitor visa')) {
+    return 'Tourist Visa';
+  }
+  if (text.includes('family visa') || text.includes('spouse visa') || text.includes('k1') || text.includes('k-1') || text.includes('fiancé')) {
+    return 'Family Visa';
+  }
   if (text.includes('policy') || text.includes('law') || text.includes('regulation') || text.includes('rule')) {
     return 'Policy Update';
-  }
-  if (text.includes('visa') || text.includes('green card') || text.includes('citizenship') || text.includes('F1 Visa')|| text.includes('Student Visa')|| text.includes('OPT')|| text.includes('h1b') || text.includes('eb5')) {
-    return 'Visa News';
   }
   if (text.includes('border') || text.includes('customs') || text.includes('enforcement') || text.includes('ice') || text.includes('cbp')) {
     return 'Border Security';
@@ -143,11 +155,42 @@ const isUrgent = (title: string, description: string): boolean => {
 
 export const fetchImmigrationNews = async (): Promise<NewsItem[]> => {
   try {
-    console.log('Starting immigration news fetch...');
-    const rssUrl = 'https://news.google.com/rss/search?q=immigration+USA&hl=en-US&gl=US&ceid=US:en';
-    const rssItems = await parseRSSFeed(rssUrl);
+    console.log('Starting immigration and visa news fetch...');
     
-    const newsItems = rssItems.map((item, index) => ({
+    // Multiple RSS feeds for better coverage
+    const rssUrls = [
+      'https://news.google.com/rss/search?q=visa+H1B+student+visa+work+visa+USA&hl=en-US&gl=US&ceid=US:en',
+      'https://news.google.com/rss/search?q=immigration+green+card+USCIS+USA&hl=en-US&gl=US&ceid=US:en',
+      'https://news.google.com/rss/search?q=OPT+F1+visa+international+students+USA&hl=en-US&gl=US&ceid=US:en'
+    ];
+    
+    let allRssItems: RSSItem[] = [];
+    
+    // Fetch from multiple sources
+    for (const rssUrl of rssUrls) {
+      try {
+        const items = await parseRSSFeed(rssUrl);
+        allRssItems = [...allRssItems, ...items];
+      } catch (error) {
+        console.error(`Failed to fetch from ${rssUrl}:`, error);
+        // Continue with other sources
+      }
+    }
+    
+    // Remove duplicates based on title similarity
+    const uniqueItems = allRssItems.filter((item, index, self) => 
+      index === self.findIndex(other => 
+        item.title.toLowerCase().trim() === other.title.toLowerCase().trim()
+      )
+    );
+    
+    // Sort by date (newest first)
+    uniqueItems.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+    
+    // Limit to 30 items
+    const limitedItems = uniqueItems.slice(0, 30);
+    
+    const newsItems = limitedItems.map((item, index) => ({
       id: `news-${Date.now()}-${index}`,
       title: item.title,
       summary: item.description.substring(0, 200) + (item.description.length > 200 ? '...' : ''),
@@ -159,7 +202,7 @@ export const fetchImmigrationNews = async (): Promise<NewsItem[]> => {
       link: item.link
     }));
     
-    console.log(`Successfully created ${newsItems.length} news items`);
+    console.log(`Successfully created ${newsItems.length} news items from ${uniqueItems.length} unique sources`);
     return newsItems;
     
   } catch (error) {
