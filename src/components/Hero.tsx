@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -27,67 +29,68 @@ const Hero = ({
   onNavigate
 }: HeroProps) => {
   const [activeTab, setActiveTab] = useState<'featured' | 'trending'>('featured');
-  const stories: Story[] = [{
-    id: '1',
-    title: 'Australian PR journey - skilled migration pathway',
-    author: 'Priya Sharma',
-    country: 'Australia',
-    date: 'Jun 24, 2025',
-    content: 'After 3 years on a temporary visa, finally got my permanent residency! The points system is competitive but fair. I went through the General Skilled Migration route as a software engineer...',
-    category: 'Permanent Residence',
-    stage: 'Skilled Migration',
-    status: 'Completed',
-    likes: 89,
-    comments: 23,
-    views: 1250,
-    featured: true,
-    trending: true
-  }, {
-    id: '2',
-    title: 'Canadian Express Entry - Software Developer Path',
-    author: 'Ahmed Hassan',
-    country: 'Canada',
-    date: 'Jun 20, 2025',
-    content: 'Just received my ITA! Scored 472 points in the Express Entry pool. My advice: get your language tests done early (IELTS/CELPIP)...',
-    category: 'Express Entry',
-    stage: 'Professional',
-    status: 'In Progress',
-    likes: 67,
-    comments: 18,
-    views: 890,
-    featured: true,
-    trending: false
-  }, {
-    id: '3',
-    title: 'UK Student to Work Visa Transition',
-    author: 'Maria Rodriguez',
-    country: 'United Kingdom',
-    date: 'Jun 18, 2025',
-    content: 'Successfully transitioned from Tier 4 student visa to Skilled Worker visa. The new points-based system is actually quite straightforward...',
-    category: 'Work Visa',
-    stage: 'Student Transition',
-    status: 'Completed',
-    likes: 45,
-    comments: 12,
-    views: 675,
-    featured: false,
-    trending: true
-  }, {
-    id: '4',
-    title: 'US Green Card Lottery Success Story',
-    author: 'David Kim',
-    country: 'United States',
-    date: 'Jun 15, 2025',
-    content: 'Against all odds, won the DV lottery and now have my green card! Here\'s my complete journey and tips for future applicants...',
-    category: 'Green Card',
-    stage: 'Diversity Visa',
-    status: 'Completed',
-    likes: 134,
-    comments: 45,
-    views: 2100,
-    featured: true,
-    trending: true
-  }];
+  
+  // Fetch real posts from the database
+  const { data: posts, isLoading } = useQuery({
+    queryKey: ['hero-posts'],
+    queryFn: async () => {
+      console.log('Fetching posts for hero...');
+      
+      // Fetch posts
+      const { data: postsData, error: postsError } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (postsError) {
+        console.error('Error fetching posts:', postsError);
+        throw postsError;
+      }
+
+      // Fetch profiles for the posts
+      const userIds = postsData?.map(post => post.user_id).filter(Boolean) || [];
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, username, full_name, avatar_url')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        throw profilesError;
+      }
+
+      // Transform posts to match the Story interface
+      const transformedPosts = postsData?.map(post => {
+        const profile = profilesData?.find(profile => profile.id === post.user_id);
+        const author = post.display_username || profile?.username || 'Anonymous';
+        
+        return {
+          id: post.id,
+          title: post.title,
+          author,
+          country: post.country || post.target_country || 'Unknown',
+          date: new Date(post.created_at).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric' 
+          }),
+          content: post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content,
+          category: post.category || 'General',
+          stage: post.stage || 'Unknown',
+          status: post.status || 'Planning',
+          likes: post.likes || 0,
+          comments: post.comments || 0,
+          views: Math.floor(Math.random() * 2000) + 100, // Generate random views for display
+          featured: Math.random() > 0.5, // Randomly assign featured status
+          trending: Math.random() > 0.6, // Randomly assign trending status
+        } as Story;
+      }) || [];
+
+      console.log('Transformed posts:', transformedPosts);
+      return transformedPosts;
+    },
+  });
   const features = [{
     icon: Users,
     title: "Global Community",
@@ -119,7 +122,9 @@ const Hero = ({
         return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
-  const filteredStories = activeTab === 'featured' ? stories.filter(story => story.featured) : stories.filter(story => story.trending);
+  const filteredStories = activeTab === 'featured' 
+    ? (posts || []).filter(story => story.featured) 
+    : (posts || []).filter(story => story.trending);
   return <div className="space-y-20">
       {/* Hero Section */}
       <div className="text-center space-y-8 py-8 relative">
