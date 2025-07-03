@@ -408,35 +408,42 @@ const PostFeed = () => {
                 {/* Display replies */}
                 {getPostReplies(post.id).length > 0 && (
                   <div className="mt-3 space-y-2">
-                    {getPostReplies(post.id).map((reply) => (
-                      <div key={reply.id} className="bg-gray-900/50 p-3 rounded-lg border-l-2 border-gray-700">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center space-x-2">
-                            <Avatar className="h-5 w-5">
-                              <AvatarFallback className="text-xs bg-gray-600 text-white">
-                                {reply.profiles?.username?.[0]?.toUpperCase() || 'U'}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="font-medium text-xs text-white">
-                              {reply.profiles?.username || 'Anonymous'}
-                            </span>
+                    {getPostReplies(post.id).map((reply) => {
+                      // Extract username from content if it's in [username]: format
+                      const usernameMatch = reply.content.match(/^\[([^\]]+)\]:\s*/);
+                      const displayUsername = usernameMatch ? usernameMatch[1] : (reply.profiles?.username || 'Anonymous');
+                      const displayContent = usernameMatch ? reply.content.replace(/^\[([^\]]+)\]:\s*/, '') : reply.content;
+                      
+                      return (
+                        <div key={reply.id} className="bg-gray-900/50 p-3 rounded-lg border-l-2 border-gray-700">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center space-x-2">
+                              <Avatar className="h-5 w-5">
+                                <AvatarFallback className="text-xs bg-gray-600 text-white">
+                                  {displayUsername?.[0]?.toUpperCase() || 'U'}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="font-medium text-xs text-white">
+                                {displayUsername}
+                              </span>
+                            </div>
+                            {user && reply.user_id === user.id && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteReply(reply.id)}
+                                className="h-5 w-5 p-0 text-red-400 hover:text-red-300 hover:bg-red-950"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            )}
                           </div>
-                          {user && reply.user_id === user.id && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteReply(reply.id)}
-                              className="h-5 w-5 p-0 text-red-400 hover:text-red-300 hover:bg-red-950"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          )}
+                          <p className="text-xs text-gray-300 mt-1 leading-relaxed whitespace-pre-wrap">
+                            {displayContent}
+                          </p>
                         </div>
-                        <p className="text-xs text-gray-300 mt-1 leading-relaxed whitespace-pre-wrap">
-                          {reply.content}
-                        </p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
