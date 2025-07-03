@@ -157,11 +157,15 @@ export const fetchImmigrationNews = async (): Promise<NewsItem[]> => {
   try {
     console.log('Starting immigration and visa news fetch...');
     
-    // Multiple RSS feeds for better coverage
+    // Multiple RSS feeds with better terms for American sources and recent content
     const rssUrls = [
-      'https://news.google.com/rss/search?q=visa+H1B+student+visa+work+visa+USA&hl=en-US&gl=US&ceid=US:en',
-      'https://news.google.com/rss/search?q=immigration+green+card+USCIS+USA&hl=en-US&gl=US&ceid=US:en',
-      'https://news.google.com/rss/search?q=OPT+F1+visa+international+students+USA&hl=en-US&gl=US&ceid=US:en'
+      // More specific terms with site restrictions for American sources
+      'https://news.google.com/rss/search?q=immigration+visa+USCIS+USA+site:reuters.com+OR+site:apnews.com+OR+site:cnn.com&hl=en-US&gl=US&ceid=US:en',
+      'https://news.google.com/rss/search?q="H1B+visa"+OR+"student+visa"+OR+"work+visa"+USA+site:bloomberg.com+OR+site:wsj.com&hl=en-US&gl=US&ceid=US:en',
+      'https://news.google.com/rss/search?q="green+card"+OR+"immigration+policy"+OR+"visa+processing"+USA&hl=en-US&gl=US&ceid=US:en',
+      // Recent immigration and visa news with time filter
+      'https://news.google.com/rss/search?q=immigration+visa+USA+when:7d&hl=en-US&gl=US&ceid=US:en',
+      'https://news.google.com/rss/search?q="USCIS+announces"+OR+"State+Department+visa"+USA&hl=en-US&gl=US&ceid=US:en'
     ];
     
     let allRssItems: RSSItem[] = [];
@@ -169,6 +173,7 @@ export const fetchImmigrationNews = async (): Promise<NewsItem[]> => {
     // Fetch from multiple sources
     for (const rssUrl of rssUrls) {
       try {
+        console.log(`Fetching from: ${rssUrl}`);
         const items = await parseRSSFeed(rssUrl);
         allRssItems = [...allRssItems, ...items];
       } catch (error) {
@@ -177,8 +182,26 @@ export const fetchImmigrationNews = async (): Promise<NewsItem[]> => {
       }
     }
     
+    // Filter out Indian sources and old news
+    const americanSources = allRssItems.filter(item => {
+      const source = item.source.toLowerCase();
+      const title = item.title.toLowerCase();
+      
+      // Filter out Indian news sources
+      const indianSources = ['india', 'hindi', 'bengali', 'tamil', 'mumbai', 'delhi', 'bangalore', 'indian'];
+      const isIndianSource = indianSources.some(term => source.includes(term) || title.includes(term));
+      
+      // Check if it's recent (within last 30 days)
+      const publishDate = new Date(item.pubDate);
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const isRecent = publishDate > thirtyDaysAgo;
+      
+      return !isIndianSource && isRecent;
+    });
+    
     // Remove duplicates based on title similarity
-    const uniqueItems = allRssItems.filter((item, index, self) => 
+    const uniqueItems = americanSources.filter((item, index, self) => 
       index === self.findIndex(other => 
         item.title.toLowerCase().trim() === other.title.toLowerCase().trim()
       )
@@ -187,8 +210,8 @@ export const fetchImmigrationNews = async (): Promise<NewsItem[]> => {
     // Sort by date (newest first)
     uniqueItems.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
     
-    // Limit to 30 items
-    const limitedItems = uniqueItems.slice(0, 30);
+    // Limit to 25 items
+    const limitedItems = uniqueItems.slice(0, 25);
     
     const newsItems = limitedItems.map((item, index) => ({
       id: `news-${Date.now()}-${index}`,
@@ -202,7 +225,7 @@ export const fetchImmigrationNews = async (): Promise<NewsItem[]> => {
       link: item.link
     }));
     
-    console.log(`Successfully created ${newsItems.length} news items from ${uniqueItems.length} unique sources`);
+    console.log(`Successfully created ${newsItems.length} news items from ${uniqueItems.length} unique American sources`);
     return newsItems;
     
   } catch (error) {
